@@ -1,5 +1,14 @@
 #!/usr/bin/env nextflow
 
+/*
+========================================================================================
+    STAR RNA-Seq NextFlow Pipeline for Tansey Lab
+========================================================================================
+    Github   :  https://github.com/tansey-lab/nf-rnaseq
+    Contact  :  Jess White
+----------------------------------------------------------------------------------------
+*/
+
 params.max_memory = "64.GB"
 params.max_cpus = 12
 
@@ -58,17 +67,13 @@ include { BAM_QC } from './subworkflows/bam_qc.nf' addParams(OUTPUT: "${params.o
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    LOAD FASTQ AND GENOME FILES AS CHANNELS
+    LOAD FASTQ FILES AS CHANNEL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
 Channel
     .fromFilePairs ( params.fastq, checkIfExists: true )
     .set { fastq_ch }
-
-Channel
-    .fromPath ( params.adapterFASTA, checkIfExists: true )
-    .set { adapter_ch }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,12 +90,17 @@ workflow FASTQC_FASTQ {
 }
 
 workflow FASTP_FASTQ {
-    RUN_FASTP ( fastq_ch, adapter_ch )
+    if ( params.adapterFASTA ){
+        adapter_fasta = file(params.adapterFASTA)
+        if( !adapter_fasta.exists() ) exit 1, "Genome chrom sizes file not found: ${params.adapterFASTA}"
+    }
+
+    RUN_FASTP ( fastq_ch, adapter_fasta )
     RUN_FASTQC_FASTP ( RUN_FASTP.out.reads )
     RUN_MULTIQC_FASTP (
         "fastp",
         RUN_FASTQC_FASTP.out.logs.mix(
-            RUN_FASTQC_FASTP.out.json.map { it -> it[1] }
+            RUN_FASTP.out.json.map { it -> it[1] }
         ).collect()
     )
 }
@@ -134,3 +144,26 @@ workflow QC_BAM {
         qc_ch.collect()
     )
 }
+
+workflow.onComplete {
+
+    println ( workflow.success ? """
+        Pipeline execution summary
+        ---------------------------
+        Completed at: ${workflow.complete}
+        Duration    : ${workflow.duration}
+        Success     : ${workflow.success}
+        workDir     : ${workflow.workDir}
+        exit status : ${workflow.exitStatus}
+        """ : """
+        Failed: ${workflow.errorReport}
+        exit status : ${workflow.exitStatus}
+        """
+    )
+}
+
+/*
+========================================================================================
+    THE END
+========================================================================================
+*/
