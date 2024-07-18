@@ -6,13 +6,13 @@ To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json 
 
 It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
 - The first workflow runs `fastqc` on the raw fastq files and then `multiqc` on those results
-  - To run this alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
+  - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
 - The second workflow runs `fastp` to trim adapters and/or poly-X or poly-A tails, followed by `fastq` and `multiqc`
-  - To run this alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTP_FASTQ`
+  - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTP_FASTQ`
 - The third workflow runs `star` on the adapter-trimmed fastq files followed by `samtools` indexing
-  - To run this alone use: `nextflow run main.nf -params-file params.json -profile iris -entry STAR_FASTQ`
+  - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry STAR_FASTQ`
 - The fourth workflow runs QC on the resulting BAM files (`samtools flagstat` and various `rseqc` modules), followed by `multiqc`
-  - To run this alone use: `nextflow run main.nf -params-file params.json -profile iris -entry QC_BAM`
+  - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry QC_BAM`
 
 ## Environment
 
