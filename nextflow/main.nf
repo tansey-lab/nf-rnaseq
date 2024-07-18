@@ -67,13 +67,18 @@ include { BAM_QC } from './subworkflows/bam_qc.nf' addParams(OUTPUT: "${params.o
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    LOAD FASTQ FILES AS CHANNEL
+    LOAD FILES
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
 Channel
     .fromFilePairs ( params.fastq, checkIfExists: true )
     .set { fastq_ch }
+
+if ( params.adapterFASTA ){
+    adapter_fasta = file(params.adapterFASTA)
+    if( !adapter_fasta.exists() ) exit 1, "Genome chrom sizes file not found: ${params.adapterFASTA}"
+}
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,11 +95,6 @@ workflow FASTQC_FASTQ {
 }
 
 workflow FASTP_FASTQ {
-    if ( params.adapterFASTA ){
-        adapter_fasta = file(params.adapterFASTA)
-        if( !adapter_fasta.exists() ) exit 1, "Genome chrom sizes file not found: ${params.adapterFASTA}"
-    }
-
     RUN_FASTP ( fastq_ch, adapter_fasta )
     RUN_FASTQC_FASTP ( RUN_FASTP.out.reads )
     RUN_MULTIQC_FASTP (
