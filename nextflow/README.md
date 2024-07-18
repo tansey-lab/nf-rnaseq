@@ -23,8 +23,8 @@ Currently, this workflow assumes that a `conda` environment has been created wit
 Generate own `params.json` file using the following parameters:
 ```
 {
-    "inputDir"      :       "TODO", # path
-    "fastqFile"     :       "TODO", # fastq filename pattern
+    "inputDir"      :       "TODO",
+    "fastqFile"     :       "TODO",
     "outDir"        :       "TODO",
     "condaEnv"      :       "TODO",
     "genomeDir"     :       "TODO",
