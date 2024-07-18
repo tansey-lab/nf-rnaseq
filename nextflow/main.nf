@@ -1,7 +1,9 @@
 #!/usr/bin/env nextflow
 
 params.max_memory = "64.GB"
-params.max_cpus = "12"
+params.max_cpus = 12
+
+params.fastq = "${params.inputDir}${params.fastqFile}"
 
 params.fastp = "${params.outDir}/fastp/*_{1,2}.fastp*"
 params.fastp_json = "${params.outDir}/fastp/*fastp.json"
@@ -31,20 +33,20 @@ log.info """\
 */
 
 // pre-trimming QC fastqc and multiqc
-include { RUN_FASTQC  as RUN_FASTQC_FASTQ  } from './modules/fastqc/main.nf'   addParams(OUTPUT: "${params.outdir}/fastqc/fastq")
-include { RUN_MULTIQC as RUN_MULTIQC_FASTQ } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outdir}/multiqc/fastq")
+include { RUN_FASTQC  as RUN_FASTQC_FASTQ  } from './modules/fastqc/main.nf'   addParams(OUTPUT: "${params.outDir}/fastqc/fastq")
+include { RUN_MULTIQC as RUN_MULTIQC_FASTQ } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outDir}/multiqc/fastq")
 
 // trimming with fastp and pre-alignment QC fastqc and multiqc
-include { RUN_FASTP                        } from './modules/fastp/main.nf'    addParams(OUTPUT: "${params.outdir}/fastp")
-include { RUN_FASTQC  as RUN_FASTQC_FASTP  } from './modules/fastqc/main.nf'   addParams(OUTPUT: "${params.outdir}/fastqc/fastp")
-include { RUN_MULTIQC as RUN_MULTIQC_FASTP } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outdir}/multiqc/fastp")
+include { RUN_FASTP                        } from './modules/fastp/main.nf'    addParams(OUTPUT: "${params.outDir}/fastp")
+include { RUN_FASTQC  as RUN_FASTQC_FASTP  } from './modules/fastqc/main.nf'   addParams(OUTPUT: "${params.outDir}/fastqc/fastp")
+include { RUN_MULTIQC as RUN_MULTIQC_FASTP } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outDir}/multiqc/fastp")
 
 // align fastq files using STAR and index
-include { STAR_ALIGN                       } from './modules/star/main.nf'     addParams(OUTPUT: "${params.outdir}/alignment")
-include { SAMTOOLS_INDEX                   } from './modules/samtools/main.nf' addParams(OUTPUT: "${params.outdir}/alignment")
+include { STAR_ALIGN                       } from './modules/star/main.nf'     addParams(OUTPUT: "${params.outDir}/alignment")
+include { SAMTOOLS_INDEX                   } from './modules/samtools/main.nf' addParams(OUTPUT: "${params.outDir}/alignment")
 
 // post-alignment multiqc
-include { RUN_MULTIQC as RUN_MULTIQC_STAR  } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outdir}/multiqc/bam")
+include { RUN_MULTIQC as RUN_MULTIQC_STAR  } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outDir}/multiqc/bam")
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,7 +54,7 @@ include { RUN_MULTIQC as RUN_MULTIQC_STAR  } from './modules/multiqc/main.nf'  a
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { BAM_QC } from './subworkflows/bam_qc.nf' addParams(OUTPUT: "${params.outdir}/bamqc")
+include { BAM_QC } from './subworkflows/bam_qc.nf' addParams(OUTPUT: "${params.outDir}/bamqc")
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
