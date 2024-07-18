@@ -5,13 +5,17 @@
 To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json -profile iris`
 
 It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
-- The first workflow runs `fastqc` on the raw fastq files and then `multiqc` on those results
+
+1. The first workflow runs [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) on the raw fastq files and then [`MultiQC`](http://multiqc.info/) on those results
   - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
-- The second workflow runs `fastp` to trim adapters and/or poly-X or poly-A tails, followed by `fastq` and `multiqc`
+
+2. The second workflow runs [`fastp`](https://github.com/OpenGene/fastp) to trim adapters and/or poly-X or poly-A tails, followed by [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](http://multiqc.info/)
   - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTP_FASTQ`
-- The third workflow runs `star` on the adapter-trimmed fastq files followed by `samtools` indexing
+
+3. The third workflow runs [`STAR`](https://github.com/alexdobin/STAR) on the adapter-trimmed fastq files followed by [`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) indexing
   - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry STAR_FASTQ`
-- The fourth workflow runs QC on the resulting BAM files (`samtools flagstat` and various `rseqc` modules), followed by `multiqc`
+
+4. The fourth workflow runs QC on the resulting BAM files ([`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) `flagstat` and various [`RSeQC`](http://rseqc.sourceforge.net/) modules), followed by [`MultiQC`](http://multiqc.info/) on those results
   - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry QC_BAM`
 
 ## Environment
