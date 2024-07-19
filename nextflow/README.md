@@ -10,17 +10,225 @@ It is recommended that each workflow in `main.nf` is run sequentially to allow f
     - The first workflow runs [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) on the raw fastq files and then [`MultiQC`](http://multiqc.info/) on those results
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
 
+```html
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+<pre class="mermaid" style="text-align: center;">
+flowchart TB
+    subgraph " "
+    v0["Channel.fromFilePairs"]
+    v1["Channel.fromPath"]
+    v3["adapterFASTA"]
+    v11["filename"]
+    end
+    subgraph " "
+    v2["adapter_ch"]
+    v5[" "]
+    v6[" "]
+    v13[" "]
+    end
+    subgraph FASTP_FASTQ
+    v4([RUN_FASTP])
+    v7([RUN_FASTQC_FASTP])
+    v12([RUN_MULTIQC_FASTP])
+    v8(( ))
+    end
+    v0 --> v4
+    v1 --> v2
+    v3 --> v4
+    v4 --> v7
+    v4 --> v6
+    v4 --> v5
+    v4 --> v8
+    v7 --> v8
+    v11 --> v12
+    v8 --> v12
+    v12 --> v13
+
+</pre>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>
+```
+
 2. **Trimming and QC**
     - The second workflow runs [`fastp`](https://github.com/OpenGene/fastp) to trim adapters and/or poly-X or poly-A tails, followed by [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](http://multiqc.info/)
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTP_FASTQ`
+
+```html
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+<pre class="mermaid" style="text-align: center;">
+flowchart TB
+    subgraph " "
+    v0["Channel.fromFilePairs"]
+    v1["Channel.fromPath"]
+    v3["adapterFASTA"]
+    v11["filename"]
+    end
+    subgraph " "
+    v2["adapter_ch"]
+    v5[" "]
+    v6[" "]
+    v13[" "]
+    end
+    subgraph FASTP_FASTQ
+    v4([RUN_FASTP])
+    v7([RUN_FASTQC_FASTP])
+    v12([RUN_MULTIQC_FASTP])
+    v8(( ))
+    end
+    v0 --> v4
+    v1 --> v2
+    v3 --> v4
+    v4 --> v7
+    v4 --> v6
+    v4 --> v5
+    v4 --> v8
+    v7 --> v8
+    v11 --> v12
+    v8 --> v12
+    v12 --> v13
+
+</pre>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>
+```
 
 3. **Alignment and indexing**
     - The third workflow runs [`STAR`](https://github.com/alexdobin/STAR) on the adapter-trimmed fastq files followed by [`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) indexing
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry STAR_FASTQ`
 
+```html
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+<pre class="mermaid" style="text-align: center;">
+flowchart TB
+    subgraph " "
+    v0["Channel.fromFilePairs"]
+    v1["Channel.fromPath"]
+    v3["adapterFASTA"]
+    v11["filename"]
+    end
+    subgraph " "
+    v2["adapter_ch"]
+    v5[" "]
+    v6[" "]
+    v13[" "]
+    end
+    subgraph FASTP_FASTQ
+    v4([RUN_FASTP])
+    v7([RUN_FASTQC_FASTP])
+    v12([RUN_MULTIQC_FASTP])
+    v8(( ))
+    end
+    v0 --> v4
+    v1 --> v2
+    v3 --> v4
+    v4 --> v7
+    v4 --> v6
+    v4 --> v5
+    v4 --> v8
+    v7 --> v8
+    v11 --> v12
+    v8 --> v12
+    v12 --> v13
+
+</pre>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>
+```
+
 4. **Post-alignment QC**
     - The fourth workflow runs QC on the resulting BAM files ([`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) `flagstat` and various [`RSeQC`](http://rseqc.sourceforge.net/) modules), followed by [`MultiQC`](http://multiqc.info/) on those results
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry QC_BAM`
+
+```html
+<html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+<pre class="mermaid" style="text-align: center;">
+flowchart TB
+    subgraph " "
+    v0["Channel.fromFilePairs"]
+    v2["Channel.fromPath"]
+    v13["Channel.fromPath"]
+    v14["Channel.fromPath"]
+    v22["filename"]
+    end
+    subgraph " "
+    v1["fastq_ch"]
+    v9[" "]
+    v10[" "]
+    v11[" "]
+    v24[" "]
+    end
+    subgraph QC_BAM
+    subgraph BAM_QC
+    v4([GET_BED])
+    v5([SAMTOOLS_FLAGSTAT])
+    v6([RSEQC_BAMSTAT])
+    v7([RSEQC_INFEREXP])
+    v8([RSEQC_READDUPLICATION])
+    v12([RSEQC_READDISTRIBUTION])
+    v3(( ))
+    end
+    v23([RUN_MULTIQC_STAR])
+    v15(( ))
+    end
+    v0 --> v1
+    v2 --> v3
+    v4 --> v7
+    v4 --> v12
+    v3 --> v5
+    v5 --> v15
+    v3 --> v6
+    v6 --> v15
+    v3 --> v7
+    v7 --> v15
+    v3 --> v8
+    v8 --> v11
+    v8 --> v10
+    v8 --> v9
+    v8 --> v15
+    v3 --> v12
+    v12 --> v15
+    v13 --> v15
+    v14 --> v15
+    v22 --> v23
+    v15 --> v23
+    v23 --> v24
+
+</pre>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>
+```
 
 ## Environment
 
@@ -37,7 +245,6 @@ Generate own `params.json` file using the following parameters:
     "condaEnv"     : "TODO",
     "genomeDir"    : "TODO",
     "adapterFASTA" : "TODO",
-    "linkBED"      : "TODO",
     "fileBED"      : "TODO"
 }
 ```
@@ -52,8 +259,7 @@ Below is a description of what each variable should contain. If variable is opti
 | condaEnv     |    No    | Path to conda environment to use                                 |
 | genomeDir    |    No    | Path to STAR genome directory to use for alignment               |
 | adapterFASTA |    Yes   | FASTA file containing adapters to trim with FASTP                |
-| linkBED      |    Yes   | Link to bed file to use; only necessary with some RSeqQC modules |
-| fileBED      |    Yes   | Bed file name to use; only necessary with some RSeqQC modules    |
+| fileBED      |    Yes   | Path to bed file to use; only necessary with some RSeqQC modules |
 
 ## Output directory/file structure
 
@@ -97,7 +303,6 @@ TODO: Add `bam_multiqc_report` and any quantification (`RSEM`/`featureCounts`) o
 │       │   ├── <sampleId>_R1_fastqc.zip
 │       │   ├── <sampleId>_R2_fastqc.html
 │       │   └── <sampleId>_R2_fastqc.zip
-├── <fileBED>.bed
 ├── multiqc
 │   ├── fastp_multiqc_report
 │   │   ├── multiqc_data
