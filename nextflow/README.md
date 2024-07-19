@@ -57,7 +57,9 @@ Below is a description of what each variable should contain. If variable is opti
 
 ## Output directory/file structure
 
-The following is the directory and file structure that will be generated if paired end fastq files are used as a starting point and all workflows are run:
+The following is the directory and file structure that will be generated if paired end fastq files with naming convention `<sampleId>_R{1,2}.fastq` are used as a starting point and all workflows are run:
+
+TODO: Add `bam_multiqc_report` and any quantification (`RSEM`/`featureCounts`) outputs once finished running.
 
 ```
 ├── alignment
