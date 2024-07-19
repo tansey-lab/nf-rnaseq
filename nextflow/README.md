@@ -11,12 +11,6 @@ It is recommended that each workflow in `main.nf` is run sequentially to allow f
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
 
 ```mermaid
-<html>
-<head>
-<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-</head>
-<body>
-<pre class="mermaid" style="text-align: center;">
 flowchart TB
     subgraph " "
     v0["Channel.fromFilePairs"]
@@ -47,14 +41,6 @@ flowchart TB
     v11 --> v12
     v8 --> v12
     v12 --> v13
-
-</pre>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad: true });
-</script>
-</body>
-</html>
 ```
 
 2. **Trimming and QC**
@@ -62,12 +48,6 @@ flowchart TB
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTP_FASTQ`
 
 ```mermaid
-<html>
-<head>
-<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-</head>
-<body>
-<pre class="mermaid" style="text-align: center;">
 flowchart TB
     subgraph " "
     v0["Channel.fromFilePairs"]
@@ -98,14 +78,6 @@ flowchart TB
     v11 --> v12
     v8 --> v12
     v12 --> v13
-
-</pre>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad: true });
-</script>
-</body>
-</html>
 ```
 
 3. **Alignment and indexing**
@@ -113,12 +85,6 @@ flowchart TB
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry STAR_FASTQ`
 
 ```mermaid
-<html>
-<head>
-<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-</head>
-<body>
-<pre class="mermaid" style="text-align: center;">
 flowchart TB
     subgraph " "
     v0["Channel.fromFilePairs"]
@@ -149,14 +115,6 @@ flowchart TB
     v11 --> v12
     v8 --> v12
     v12 --> v13
-
-</pre>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad: true });
-</script>
-</body>
-</html>
 ```
 
 4. **Post-alignment QC**
@@ -164,12 +122,6 @@ flowchart TB
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry QC_BAM`
 
 ```mermaid
-<html>
-<head>
-<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-</head>
-<body>
-<pre class="mermaid" style="text-align: center;">
 flowchart TB
     subgraph " "
     v0["Channel.fromFilePairs"]
@@ -220,14 +172,6 @@ flowchart TB
     v22 --> v23
     v15 --> v23
     v23 --> v24
-
-</pre>
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad: true });
-</script>
-</body>
-</html>
 ```
 
 ## Environment
