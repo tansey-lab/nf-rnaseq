@@ -10,7 +10,6 @@ It is recommended that each workflow in `main.nf` is run sequentially to allow f
     - The first workflow runs [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) on the raw fastq files and then [`MultiQC`](http://multiqc.info/) on those results
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
 
-```html
 <html>
 <head>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
@@ -55,13 +54,11 @@ flowchart TB
 </script>
 </body>
 </html>
-```
 
 2. **Trimming and QC**
     - The second workflow runs [`fastp`](https://github.com/OpenGene/fastp) to trim adapters and/or poly-X or poly-A tails, followed by [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](http://multiqc.info/)
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTP_FASTQ`
 
-```html
 <html>
 <head>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
@@ -106,13 +103,11 @@ flowchart TB
 </script>
 </body>
 </html>
-```
 
 3. **Alignment and indexing**
     - The third workflow runs [`STAR`](https://github.com/alexdobin/STAR) on the adapter-trimmed fastq files followed by [`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) indexing
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry STAR_FASTQ`
 
-```html
 <html>
 <head>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
@@ -157,13 +152,11 @@ flowchart TB
 </script>
 </body>
 </html>
-```
 
 4. **Post-alignment QC**
     - The fourth workflow runs QC on the resulting BAM files ([`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) `flagstat` and various [`RSeQC`](http://rseqc.sourceforge.net/) modules), followed by [`MultiQC`](http://multiqc.info/) on those results
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry QC_BAM`
 
-```html
 <html>
 <head>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
@@ -228,7 +221,6 @@ flowchart TB
 </script>
 </body>
 </html>
-```
 
 ## Environment
 
