@@ -97,7 +97,7 @@ TODO: Add `bam_multiqc_report` and any quantification (`RSEM`/`featureCounts`) o
 │       │   ├── <sampleId>_R1_fastqc.zip
 │       │   ├── <sampleId>_R2_fastqc.html
 │       │   └── <sampleId>_R2_fastqc.zip
-├── hg38_RefSeq.bed
+├── <fileBED>.bed
 ├── multiqc
 │   ├── fastp_multiqc_report
 │   │   ├── multiqc_data
