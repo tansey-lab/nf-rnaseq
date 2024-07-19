@@ -121,7 +121,6 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph " "
-    v0["Channel.fromFilePairs"]
     v2["Channel.fromPath"]
     v13["Channel.fromPath"]
     v14["Channel.fromPath"]
@@ -129,7 +128,6 @@ flowchart TB
     v4["fileBED"]
     end
     subgraph " "
-    v1["fastq_ch"]
     v9[" "]
     v10[" "]
     v11[" "]
