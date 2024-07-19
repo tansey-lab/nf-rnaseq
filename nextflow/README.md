@@ -14,33 +14,21 @@ It is recommended that each workflow in `main.nf` is run sequentially to allow f
 flowchart TB
     subgraph " "
     v0["Channel.fromFilePairs"]
-    v1["Channel.fromPath"]
-    v3["adapterFASTA"]
-    v11["filename"]
+    v5["filename"]
     end
     subgraph " "
-    v2["adapter_ch"]
-    v5[" "]
-    v6[" "]
-    v13[" "]
+    v7[" "]
     end
-    subgraph FASTP_FASTQ
-    v4([RUN_FASTP])
-    v7([RUN_FASTQC_FASTP])
-    v12([RUN_MULTIQC_FASTP])
-    v8(( ))
+    subgraph FASTQC_FASTQ
+    v3([RUN_FASTQC_FASTQ])
+    v6([RUN_MULTIQC_FASTQ])
+    v4(( ))
     end
-    v0 --> v4
-    v1 --> v2
+    v0 --> v3
     v3 --> v4
-    v4 --> v7
+    v5 --> v6
     v4 --> v6
-    v4 --> v5
-    v4 --> v8
-    v7 --> v8
-    v11 --> v12
-    v8 --> v12
-    v12 --> v13
+    v6 --> v7
 ```
 
 2. **Trimming and QC**
@@ -51,12 +39,10 @@ flowchart TB
 flowchart TB
     subgraph " "
     v0["Channel.fromFilePairs"]
-    v1["Channel.fromPath"]
     v3["adapterFASTA"]
     v11["filename"]
     end
     subgraph " "
-    v2["adapter_ch"]
     v5[" "]
     v6[" "]
     v13[" "]
@@ -68,7 +54,6 @@ flowchart TB
     v8(( ))
     end
     v0 --> v4
-    v1 --> v2
     v3 --> v4
     v4 --> v7
     v4 --> v6
@@ -87,34 +72,46 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph " "
-    v0["Channel.fromFilePairs"]
-    v1["Channel.fromPath"]
-    v3["adapterFASTA"]
-    v11["filename"]
+    v2["Channel.fromFilePairs"]
     end
     subgraph " "
-    v2["adapter_ch"]
+    v4[" "]
     v5[" "]
     v6[" "]
+    v7[" "]
+    v8[" "]
+    v9[" "]
+    v10[" "]
+    v11[" "]
+    v12[" "]
     v13[" "]
+    v14[" "]
+    v15[" "]
+    v16[" "]
+    v17[" "]
+    v19[" "]
     end
-    subgraph FASTP_FASTQ
-    v4([RUN_FASTP])
-    v7([RUN_FASTQC_FASTP])
-    v12([RUN_MULTIQC_FASTP])
-    v8(( ))
+    subgraph STAR_FASTQ
+    v3([STAR_ALIGN])
+    v18([SAMTOOLS_INDEX])
     end
-    v0 --> v4
-    v1 --> v2
+    v2 --> v3
+    v3 --> v17
+    v3 --> v16
+    v3 --> v15
+    v3 --> v14
+    v3 --> v18
+    v3 --> v13
+    v3 --> v12
+    v3 --> v11
+    v3 --> v10
+    v3 --> v9
+    v3 --> v8
+    v3 --> v7
+    v3 --> v6
+    v3 --> v5
     v3 --> v4
-    v4 --> v7
-    v4 --> v6
-    v4 --> v5
-    v4 --> v8
-    v7 --> v8
-    v11 --> v12
-    v8 --> v12
-    v12 --> v13
+    v18 --> v19
 ```
 
 4. **Post-alignment QC**
@@ -129,6 +126,7 @@ flowchart TB
     v13["Channel.fromPath"]
     v14["Channel.fromPath"]
     v22["filename"]
+    v4["fileBED"]
     end
     subgraph " "
     v1["fastq_ch"]
@@ -139,7 +137,6 @@ flowchart TB
     end
     subgraph QC_BAM
     subgraph BAM_QC
-    v4([GET_BED])
     v5([SAMTOOLS_FLAGSTAT])
     v6([RSEQC_BAMSTAT])
     v7([RSEQC_INFEREXP])
