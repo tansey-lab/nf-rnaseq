@@ -20,7 +20,7 @@ params.fastp_json = "${params.outDir}/fastp/*fastp.json"
 params.fastqc_fastq = "${params.outDir}/fastqc/fastq/*/*"
 params.fastqc_fastp = "${params.outDir}/fastqc/fastp/*/*"
 
-params.bam = "${params.outDir}/aligned/*.Aligned.sortedByCoord.out.bam"
+params.bam = "${params.outDir}/alignment/*.Aligned.sortedByCoord.out.bam"
 
 log.info """\
         STAR RNA-Seq NextFlow Pipeline (Reference-Based)
