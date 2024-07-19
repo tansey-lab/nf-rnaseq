@@ -54,3 +54,104 @@ Below is a description of what each variable should contain. If variable is opti
 | adapterFASTA |    Yes   | FASTA file containing adapters to trim with FASTP                |
 | linkBED      |    Yes   | Link to bed file to use; only necessary with some RSeqQC modules |
 | fileBED      |    Yes   | Bed file name to use; only necessary with some RSeqQC modules    |
+
+## Output directory/file structure
+
+The following is the directory and file structure that will be generated if paired end fastq files are used as a starting point and all workflows are run:
+
+```
+├── alignment
+│   ├── <sampleId>.Aligned.sortedByCoord.out.bam
+│   ├── <sampleId>.Aligned.sortedByCoord.out.bam.bai
+│   ├── <sampleId>.Log.final.out
+│   ├── <sampleId>.Log.out
+│   ├── <sampleId>.Log.progress.out
+│   ├── <sampleId>.SJ.out.tab
+├── bamqc
+│   ├── <sampleId>.bam_stat.txt
+│   ├── <sampleId>.DupRate_plot.pdf
+│   ├── <sampleId>.DupRate_plot.r
+│   ├── <sampleId>.flagstat
+│   ├── <sampleId>.infer_experiment.txt
+│   ├── <sampleId>.pos.DupRate.xls
+│   ├── <sampleId>.read_distribution.txt
+│   ├── <sampleId>.seq.DupRate.xls
+├── fastp
+│   ├── <sampleId>_1.fastp.fastq.gz
+│   ├── <sampleId>_2.fastp.fastq.gz
+│   ├── <sampleId>.fastp.html
+│   ├── <sampleId>.fastp.json
+│   ├── <sampleId>.fastp.log
+├── fastqc
+│   ├── fastp
+│   │   ├── <sampleId>
+│   │   │   ├── <sampleId>_1.fastp_fastqc.html
+│   │   │   ├── <sampleId>_1.fastp_fastqc.zip
+│   │   │   ├── <sampleId>_2.fastp_fastqc.html
+│   │   │   └── <sampleId>_2.fastp_fastqc.zip
+│   └── fastq
+│       ├── <sampleId>
+│       │   ├── <sampleId>_R1_fastqc.html
+│       │   ├── <sampleId>_R1_fastqc.zip
+│       │   ├── <sampleId>_R2_fastqc.html
+│       │   └── <sampleId>_R2_fastqc.zip
+├── hg38_RefSeq.bed
+├── multiqc
+│   ├── fastp_multiqc_report
+│   │   ├── multiqc_data
+│   │   │   ├── fastp_filtered_reads_plot.txt
+│   │   │   ├── fastp-insert-size-plot.txt
+│   │   │   ├── fastp-seq-content-gc-plot_Read_1_After_filtering.txt
+│   │   │   ├── fastp-seq-content-gc-plot_Read_1_Before_filtering.txt
+│   │   │   ├── fastp-seq-content-gc-plot_Read_2_After_filtering.txt
+│   │   │   ├── fastp-seq-content-gc-plot_Read_2_Before_filtering.txt
+│   │   │   ├── fastp-seq-content-n-plot_Read_1_After_filtering.txt
+│   │   │   ├── fastp-seq-content-n-plot_Read_1_Before_filtering.txt
+│   │   │   ├── fastp-seq-content-n-plot_Read_2_After_filtering.txt
+│   │   │   ├── fastp-seq-content-n-plot_Read_2_Before_filtering.txt
+│   │   │   ├── fastp-seq-quality-plot_Read_1_After_filtering.txt
+│   │   │   ├── fastp-seq-quality-plot_Read_1_Before_filtering.txt
+│   │   │   ├── fastp-seq-quality-plot_Read_2_After_filtering.txt
+│   │   │   ├── fastp-seq-quality-plot_Read_2_Before_filtering.txt
+│   │   │   ├── fastqc_adapter_content_plot.txt
+│   │   │   ├── fastqc_overrepresented_sequences_plot.txt
+│   │   │   ├── fastqc_per_base_n_content_plot.txt
+│   │   │   ├── fastqc_per_base_sequence_quality_plot.txt
+│   │   │   ├── fastqc_per_sequence_gc_content_plot_Counts.txt
+│   │   │   ├── fastqc_per_sequence_gc_content_plot_Percentages.txt
+│   │   │   ├── fastqc_per_sequence_quality_scores_plot.txt
+│   │   │   ├── fastqc_sequence_counts_plot.txt
+│   │   │   ├── fastqc_sequence_duplication_levels_plot.txt
+│   │   │   ├── fastqc_sequence_length_distribution_plot.txt
+│   │   │   ├── fastqc-status-check-heatmap.txt
+│   │   │   ├── fastqc_top_overrepresented_sequences_table.txt
+│   │   │   ├── multiqc_citations.txt
+│   │   │   ├── multiqc_data.json
+│   │   │   ├── multiqc.log
+│   │   │   └── multiqc_sources.txt
+│   │   └── multiqc_report.html
+│   └── fastq_multiqc_report
+│       ├── multiqc_data
+│       │   ├── fastqc_adapter_content_plot.txt
+│       │   ├── fastqc_overrepresented_sequences_plot.txt
+│       │   ├── fastqc_per_base_n_content_plot.txt
+│       │   ├── fastqc_per_base_sequence_quality_plot.txt
+│       │   ├── fastqc_per_sequence_gc_content_plot_Counts.txt
+│       │   ├── fastqc_per_sequence_gc_content_plot_Percentages.txt
+│       │   ├── fastqc_per_sequence_quality_scores_plot.txt
+│       │   ├── fastqc_sequence_counts_plot.txt
+│       │   ├── fastqc_sequence_duplication_levels_plot.txt
+│       │   ├── fastqc-status-check-heatmap.txt
+│       │   ├── fastqc_top_overrepresented_sequences_table.txt
+│       │   ├── multiqc_citations.txt
+│       │   ├── multiqc_data.json
+│       │   ├── multiqc_general_stats.txt
+│       │   ├── multiqc.log
+│       │   └── multiqc_sources.txt
+│       └── multiqc_report.html
+├── pipeline_info
+│   ├── execution_report_<yyyy-MM-dd_HH-mm-ss>.html
+│   ├── execution_timeline_<yyyy-MM-dd_HH-mm-ss>.html
+│   ├── execution_trace_<yyyy-MM-dd_HH-mm-ss>.txt
+│   ├── pipeline_dag_<yyyy-MM-dd_HH-mm-ss>.html
+```
