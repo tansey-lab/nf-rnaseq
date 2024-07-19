@@ -90,6 +90,11 @@ if ( params.adapterFASTA ){
     if( !adapter_fasta.exists() ) exit 1, "Genome chrom sizes file not found: ${params.adapterFASTA}"
 }
 
+if ( params.fileBED ){
+    file_bed = file(params.fileBED)
+    if( !file_bed.exists() ) exit 1, "Bed file not found: ${params.fileBED}"
+}
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     WORKFLOWS
@@ -130,7 +135,7 @@ workflow QC_BAM {
         .map { [it.simpleName, it ] }
         .set { bam_ch }
 
-    BAM_QC ( bam_ch )
+    BAM_QC ( bam_ch, file_bed )
 
     Channel
         .fromPath ( params.fastp_json, checkIfExists: true )

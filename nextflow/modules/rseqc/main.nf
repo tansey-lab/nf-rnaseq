@@ -1,15 +1,3 @@
-process GET_BED {
-    publishDir "${params.outDir}", mode: 'copy', overwrite: true
-
-    output:
-    path '*.bed*', emit: bed
-
-    shell:
-    """
-    wget -O "!{params.fileBED}" "!{params.linkBED}"
-    """
-}
-
 process RSEQC_BAMSTAT {
     label 'process_medium'
 
