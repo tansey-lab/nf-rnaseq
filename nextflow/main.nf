@@ -160,6 +160,15 @@ workflow QC_BAM {
     )
 }
 
+workflow FEATURECOUNTS_BAM {
+    Channel
+        .fromPath ( params.bam, checkIfExists: true )
+        .map { [it.simpleName, it ] }
+        .set { bam_ch }
+
+    SUBREAD_FEATURECOUNTS ( bam_ch, file_gtf )
+}
+
 workflow.onComplete {
 
     println ( workflow.success ? """
