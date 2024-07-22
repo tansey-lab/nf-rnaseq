@@ -52,20 +52,23 @@ log.info """\
 */
 
 // pre-trimming QC fastqc and multiqc
-include { RUN_FASTQC  as RUN_FASTQC_FASTQ  } from './modules/fastqc/main.nf'   addParams(OUTPUT: "${params.outDir}/${params.dirFastQC}/fastq")
-include { RUN_MULTIQC as RUN_MULTIQC_FASTQ } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
+include { RUN_FASTQC  as RUN_FASTQC_FASTQ  } from './modules/fastqc/main.nf'               addParams(OUTPUT: "${params.outDir}/${params.dirFastQC}/fastq")
+include { RUN_MULTIQC as RUN_MULTIQC_FASTQ } from './modules/multiqc/main.nf'              addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
 
 // trimming with fastp and pre-alignment QC fastqc and multiqc
-include { RUN_FASTP                        } from './modules/fastp/main.nf'    addParams(OUTPUT: "${params.outDir}/${params.dirFastp}")
-include { RUN_FASTQC  as RUN_FASTQC_FASTP  } from './modules/fastqc/main.nf'   addParams(OUTPUT: "${params.outDir}/${params.dirFastQC}/fastp")
-include { RUN_MULTIQC as RUN_MULTIQC_FASTP } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
+include { RUN_FASTP                        } from './modules/fastp/main.nf'                addParams(OUTPUT: "${params.outDir}/${params.dirFastp}")
+include { RUN_FASTQC  as RUN_FASTQC_FASTP  } from './modules/fastqc/main.nf'               addParams(OUTPUT: "${params.outDir}/${params.dirFastQC}/fastp")
+include { RUN_MULTIQC as RUN_MULTIQC_FASTP } from './modules/multiqc/main.nf'              addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
 
 // align fastq files using STAR and index
-include { STAR_ALIGN                       } from './modules/star/main.nf'     addParams(OUTPUT: "${params.outDir}/${params.dirAlignment}")
-include { SAMTOOLS_INDEX                   } from './modules/samtools/main.nf' addParams(OUTPUT: "${params.outDir}/${params.dirAlignment}")
+include { STAR_ALIGN                       } from './modules/star/main.nf'                  addParams(OUTPUT: "${params.outDir}/${params.dirAlignment}")
+include { SAMTOOLS_INDEX                   } from './modules/samtools/main.nf'              addParams(OUTPUT: "${params.outDir}/${params.dirAlignment}")
 
 // post-alignment multiqc
-include { RUN_MULTIQC as RUN_MULTIQC_STAR  } from './modules/multiqc/main.nf'  addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
+include { RUN_MULTIQC as RUN_MULTIQC_STAR  } from './modules/multiqc/main.nf'               addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
+
+// featureCounts
+include { SUBREAD_FEATURECOUNTS            } from './modules/subread/featurecounts/main.nf' addParams(OUTPUT: "${params.outDir}/featurecounts")
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
