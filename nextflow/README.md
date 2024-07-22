@@ -172,6 +172,7 @@ flowchart TB
 5. **Count via featureCounts**
     - This workflow runs the [`Subread`](https://subread.sourceforge.net/) package's [`featureCounts`](https://subread.sourceforge.net/featureCounts.html) module to quantify how BAM file reads map to the features within an annotation GTF file
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FEATURECOUNTS_BAM`
+
 ```mermaid
 flowchart TB
     subgraph " "
