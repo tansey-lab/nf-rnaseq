@@ -6,12 +6,11 @@ To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json 
 
 It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
 
-0. **Pre-analysis steps** \\
-
-**(a) Download data** \\
-    - TODO
-**(b) Validate FASTQ files** \\
-    - TODO
+0. **Pre-analysis steps** \
+**(a) Download data** \
+    + TODO
+**(b) Validate FASTQ files** \
+    + TODO
 
 1. **Initial QC**
     - This workflow runs [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) on the raw fastq files and then [`MultiQC`](http://multiqc.info/) on those results
