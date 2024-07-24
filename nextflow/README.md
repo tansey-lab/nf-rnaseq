@@ -6,6 +6,12 @@ To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json 
 
 It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
 
+0. **(a) Download data**
+    - TODO
+
+0. **(b) Validate FASTQ files**
+    - TODO
+
 1. **Initial QC**
     - This workflow runs [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) on the raw fastq files and then [`MultiQC`](http://multiqc.info/) on those results
     - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
@@ -276,6 +282,45 @@ TODO: Add `bam_multiqc_report` and any quantification (`RSEM`/`featureCounts`) o
 │   ├── <sampleId>.featureCounts.txt
 │   ├── <sampleId>.featureCounts.txt.summary
 ├── multiqc
+│   ├── bam_multiqc_report
+│   │   ├── multiqc_data
+│   │   │   ├── fastp_filtered_reads_plot.txt
+│   │   │   ├── fastp-insert-size-plot.txt
+│   │   │   ├── fastp-seq-content-gc-plot_Read_1_After_filtering.txt
+│   │   │   ├── fastp-seq-content-gc-plot_Read_1_Before_filtering.txt
+│   │   │   ├── fastp-seq-content-gc-plot_Read_2_After_filtering.txt
+│   │   │   ├── fastp-seq-content-gc-plot_Read_2_Before_filtering.txt
+│   │   │   ├── fastp-seq-content-n-plot_Read_1_After_filtering.txt
+│   │   │   ├── fastp-seq-content-n-plot_Read_1_Before_filtering.txt
+│   │   │   ├── fastp-seq-content-n-plot_Read_2_After_filtering.txt
+│   │   │   ├── fastp-seq-content-n-plot_Read_2_Before_filtering.txt
+│   │   │   ├── fastp-seq-quality-plot_Read_1_After_filtering.txt
+│   │   │   ├── fastp-seq-quality-plot_Read_1_Before_filtering.txt
+│   │   │   ├── fastp-seq-quality-plot_Read_2_After_filtering.txt
+│   │   │   ├── fastp-seq-quality-plot_Read_2_Before_filtering.txt
+│   │   │   ├── fastqc_adapter_content_plot.txt
+│   │   │   ├── fastqc_overrepresented_sequences_plot.txt
+│   │   │   ├── fastqc_per_base_n_content_plot.txt
+│   │   │   ├── fastqc_per_base_sequence_quality_plot.txt
+│   │   │   ├── fastqc_per_sequence_gc_content_plot_Counts.txt
+│   │   │   ├── fastqc_per_sequence_gc_content_plot_Percentages.txt
+│   │   │   ├── fastqc_per_sequence_quality_scores_plot.txt
+│   │   │   ├── fastqc_sequence_counts_plot.txt
+│   │   │   ├── fastqc_sequence_duplication_levels_plot.txt
+│   │   │   ├── fastqc_sequence_length_distribution_plot.txt
+│   │   │   ├── fastqc-status-check-heatmap.txt
+│   │   │   ├── fastqc_top_overrepresented_sequences_table.txt
+│   │   │   ├── multiqc_citations.txt
+│   │   │   ├── multiqc_data.json
+│   │   │   ├── multiqc.log
+│   │   │   ├── multiqc_sources.txt
+│   │   │   ├── rseqc_bam_stat.txt
+│   │   │   ├── rseqc_infer_experiment_plot.txt
+│   │   │   ├── rseqc_read_distribution_plot.txt
+│   │   │   ├── rseqc_read_dups_plot.txt
+│   │   │   ├── samtools-flagstat-dp_Percentage_of_total.txt
+│   │   │   └── samtools-flagstat-dp_Read_counts.txt
+│   │   └── multiqc_report.html
 │   ├── fastp_multiqc_report
 │   │   ├── multiqc_data
 │   │   │   ├── fastp_filtered_reads_plot.txt
@@ -309,25 +354,34 @@ TODO: Add `bam_multiqc_report` and any quantification (`RSEM`/`featureCounts`) o
 │   │   │   ├── multiqc.log
 │   │   │   └── multiqc_sources.txt
 │   │   └── multiqc_report.html
-│   └── fastq_multiqc_report
-│       ├── multiqc_data
-│       │   ├── fastqc_adapter_content_plot.txt
-│       │   ├── fastqc_overrepresented_sequences_plot.txt
-│       │   ├── fastqc_per_base_n_content_plot.txt
-│       │   ├── fastqc_per_base_sequence_quality_plot.txt
-│       │   ├── fastqc_per_sequence_gc_content_plot_Counts.txt
-│       │   ├── fastqc_per_sequence_gc_content_plot_Percentages.txt
-│       │   ├── fastqc_per_sequence_quality_scores_plot.txt
-│       │   ├── fastqc_sequence_counts_plot.txt
-│       │   ├── fastqc_sequence_duplication_levels_plot.txt
-│       │   ├── fastqc-status-check-heatmap.txt
-│       │   ├── fastqc_top_overrepresented_sequences_table.txt
-│       │   ├── multiqc_citations.txt
-│       │   ├── multiqc_data.json
-│       │   ├── multiqc_general_stats.txt
-│       │   ├── multiqc.log
-│       │   └── multiqc_sources.txt
-│       └── multiqc_report.html
+│   ├── fastq_multiqc_report
+│   |   ├── multiqc_data
+│   |   │   ├── fastqc_adapter_content_plot.txt
+│   |   │   ├── fastqc_overrepresented_sequences_plot.txt
+│   |   │   ├── fastqc_per_base_n_content_plot.txt
+│   |   │   ├── fastqc_per_base_sequence_quality_plot.txt
+│   |   │   ├── fastqc_per_sequence_gc_content_plot_Counts.txt
+│   |   │   ├── fastqc_per_sequence_gc_content_plot_Percentages.txt
+│   |   │   ├── fastqc_per_sequence_quality_scores_plot.txt
+│   |   │   ├── fastqc_sequence_counts_plot.txt
+│   |   │   ├── fastqc_sequence_duplication_levels_plot.txt
+│   |   │   ├── fastqc-status-check-heatmap.txt
+│   |   │   ├── fastqc_top_overrepresented_sequences_table.txt
+│   |   │   ├── multiqc_citations.txt
+│   |   │   ├── multiqc_data.json
+│   |   │   ├── multiqc_general_stats.txt
+│   |   │   ├── multiqc.log
+│   |   │   └── multiqc_sources.txt
+│   |   └── multiqc_report.html
+│   ├── featureCounts_multiqc_report
+│   │   ├── multiqc_data
+│   │   │   ├── featureCounts_assignment_plot.txt
+│   │   │   ├── multiqc_citations.txt
+│   │   │   ├── multiqc_data.json
+│   │   │   ├── multiqc_general_stats.txt
+│   │   │   ├── multiqc.log
+│   │   │   └── multiqc_sources.txt
+│   │   └── multiqc_report.html
 ├── pipeline_info
 │   ├── execution_report_<yyyy-MM-dd_HH-mm-ss>.html
 │   ├── execution_timeline_<yyyy-MM-dd_HH-mm-ss>.html
