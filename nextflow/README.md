@@ -7,12 +7,12 @@ To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json 
 It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
 
 0. **Pre-analysis steps**
-    - **(a) Download data**
-    - **(b) Validate FASTQ files**
+    + **(a) Download data**
+    + **(b) Validate FASTQ files**
 
 1. **Initial QC**
-    - This workflow runs [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) on the raw fastq files and then [`MultiQC`](http://multiqc.info/) on those results
-    - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
+    + This workflow runs [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) on the raw fastq files and then [`MultiQC`](http://multiqc.info/) on those results
+    + To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FASTQC_FASTQ`
 
 ```mermaid
 flowchart TB
@@ -70,8 +70,8 @@ flowchart TB
 ```
 
 3. **Alignment and indexing**
-    - This workflow runs [`STAR`](https://github.com/alexdobin/STAR) on the adapter-trimmed fastq files followed by [`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) indexing
-    - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry STAR_FASTQ`
+    + This workflow runs [`STAR`](https://github.com/alexdobin/STAR) on the adapter-trimmed fastq files followed by [`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) indexing
+    + To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry STAR_FASTQ`
 
 ```mermaid
 flowchart TB
@@ -119,8 +119,8 @@ flowchart TB
 ```
 
 4. **Post-alignment QC**
-    - This workflow runs QC on the resulting BAM files ([`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) `flagstat` and various [`RSeQC`](http://rseqc.sourceforge.net/) modules), followed by [`MultiQC`](http://multiqc.info/) on those results
-    - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry QC_BAM`
+    + This workflow runs QC on the resulting BAM files ([`SAMtools`](https://sourceforge.net/projects/samtools/files/samtools/) `flagstat` and various [`RSeQC`](http://rseqc.sourceforge.net/) modules), followed by [`MultiQC`](http://multiqc.info/) on those results
+    + To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry QC_BAM`
 
 ```mermaid
 flowchart TB
@@ -174,8 +174,8 @@ flowchart TB
 ```
 
 5. **Count via featureCounts**
-    - This workflow runs the [`Subread`](https://subread.sourceforge.net/) package's [`featureCounts`](https://subread.sourceforge.net/featureCounts.html) module to quantify how BAM file reads map to the features within an annotation GTF file
-    - To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FEATURECOUNTS_BAM`
+    + This workflow runs the [`Subread`](https://subread.sourceforge.net/) package's [`featureCounts`](https://subread.sourceforge.net/featureCounts.html) module to quantify how BAM file reads map to the features within an annotation GTF file
+    + To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry FEATURECOUNTS_BAM`
 
 ```mermaid
 flowchart TB
