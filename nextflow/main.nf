@@ -9,7 +9,7 @@
 ----------------------------------------------------------------------------------------
 */
 
-params.max_memory = "64.GB"
+params.max_memory = "100.GB"
 params.max_cpus = 12
 
 // sub-directories - only FastQC needs additional sub-dir
