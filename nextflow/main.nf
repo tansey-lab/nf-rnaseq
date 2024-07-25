@@ -9,7 +9,8 @@
 ----------------------------------------------------------------------------------------
 */
 
-params.max_memory = "100.GB"
+// allow 2 retries; process_high: 72.GB * task.attempt = 216.GB
+params.max_memory = "220.GB"
 params.max_cpus = 12
 
 // sub-directories - only FastQC needs additional sub-dir
