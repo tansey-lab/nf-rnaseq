@@ -101,6 +101,11 @@ if ( params.fileBED ){
     if( !file_bed.exists() ) exit 1, "Bed file not found: ${params.fileBED}"
 }
 
+if ( params.fileGTF ){
+    file_gtf = file(params.fileGTF)
+    if( !file_gtf.exists() ) exit 1, "GTF file not found: ${params.fileGTF}"
+}
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     WORKFLOWS
