@@ -186,7 +186,9 @@ workflow FEATURECOUNTS_BAM {
 
     RUN_MULTIQC_FC (
         "featureCounts",
-        SUBREAD_FEATURECOUNTS.out.summary.map { it -> it[1] }
+        SUBREAD_FEATURECOUNTS.out.summary
+            .map { it -> it[1] }
+            .collect()
     )
 }
 
