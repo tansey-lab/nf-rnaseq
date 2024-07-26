@@ -72,6 +72,7 @@ include { RUN_MULTIQC as RUN_MULTIQC_STAR  } from './modules/multiqc/main.nf'   
 // featureCounts
 include { SUBREAD_FEATURECOUNTS            } from './modules/subread/featurecounts/main.nf' addParams(OUTPUT: "${params.outDir}/featurecounts")
 include { RUN_MULTIQC as RUN_MULTIQC_FC    } from './modules/multiqc/main.nf'               addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
+include { MERGE_FEATURECOUNTS              } from './modules/subread/featurecounts/main.nf' addParams(OUTPUT: "${params.outDir}/featurecounts")
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -187,6 +188,13 @@ workflow FEATURECOUNTS_BAM {
     RUN_MULTIQC_FC (
         "featureCounts",
         SUBREAD_FEATURECOUNTS.out.summary
+            .map { it -> it[1] }
+            .collect()
+    )
+
+    MERGE_FEATURECOUNTS (
+        params.filePrefix,
+        SUBREAD_FEATURECOUNTS.out.counts
             .map { it -> it[1] }
             .collect()
     )
