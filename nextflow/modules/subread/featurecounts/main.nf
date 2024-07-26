@@ -49,6 +49,6 @@ process MERGE_FEATURECOUNTS {
 
     script:
     """
-    python merge_featurecounts.py -f ${featureCounts} -p ${filePrefix}
+    python merge_featureCounts.py -f ${featureCounts} -p ${filePrefix}
     """
 }
