@@ -188,15 +188,15 @@ workflow FEATURECOUNTS_BAM {
     RUN_MULTIQC_FC (
         "featureCounts",
         SUBREAD_FEATURECOUNTS.out.summary
+            .groupTuple()
             .map { it -> it[1] }
-            .collect()
     )
 
     MERGE_FEATURECOUNTS (
         params.filePrefix,
-        SUBREAD_FEATURECOUNTS.out.counts
+        SUBREAD_FEATURECOUNTS.out.summary
+            .groupTuple()
             .map { it -> it[1] }
-            .collect()
     )
 }
 
