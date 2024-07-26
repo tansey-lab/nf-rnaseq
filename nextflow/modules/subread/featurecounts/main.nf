@@ -35,3 +35,20 @@ process SUBREAD_FEATURECOUNTS {
         ${bam}
     """
 }
+
+process MERGE_FEATURECOUNTS {
+    conda "${params.condaEnv}"
+    publishDir "${params.OUTPUT}", mode: 'copy', overwrite: true
+
+    input:
+    val(filePrefix)
+    path(featureCounts)
+
+    output:
+    path("{filePrefix}_featureCounts.csv"), emit: counts
+
+    script:
+    """
+    python merge_featurecounts.py -f ${featureCounts} -p ${filePrefix}
+    """
+}
