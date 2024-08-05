@@ -16,7 +16,7 @@ class APIClient(ABC):
         if self.headers is None:
             response = session.get(self.url_query)
         else:
-            response = session.get(self.url_query, ast.literal_eval(self.header))
+            response = session.get(self.url_query, headers=ast.literal_eval(self.headers))
 
         try:
             response.raise_for_status()
@@ -25,8 +25,8 @@ class APIClient(ABC):
 
         try:
             self.json = response.json()
-        except requests.exceptions.JSONDecodeError as e:
-            logging.error("Error at %s", "division", exc_info=e)
+        except requests.exceptions.JSONDecodeError:
+            # logging.error("Error at %s", "division", exc_info=e)
             self.text = response.text
 
     @abstractmethod
@@ -35,11 +35,6 @@ class APIClient(ABC):
         ...
 
     @abstractmethod
-    def maybe_set_attr_from_json(self):
-        """Set attributes in the object from the json response."""
-        ...
-
-    @abstractmethod
-    def maybe_get_hgnc_gene_name(self):
-        """Get the HGNC gene name from the json response."""
+    def maybe_get_gene_names(self):
+        """Get the gene name from the request response."""
         ...

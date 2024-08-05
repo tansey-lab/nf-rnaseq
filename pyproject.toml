@@ -53,7 +53,7 @@ test = [
 ]
 
 [project.scripts]
-get_hgnc_gene_name = "nf_rnaseq.cli.get_hgnc_gene_name:main"
+get_gene_name = "nf_rnaseq.cli.get_gene_name:main"
 
 [tool.coverage.run]
 source = ["nf_rnaseq"]
