@@ -74,6 +74,11 @@ include { SUBREAD_FEATURECOUNTS            } from './modules/subread/featurecoun
 include { RUN_MULTIQC as RUN_MULTIQC_FC    } from './modules/multiqc/main.nf'               addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
 include { MERGE_FEATURECOUNTS              } from './modules/subread/featurecounts/main.nf' addParams(OUTPUT: "${params.outDir}/featurecounts")
 
+// add annotation
+include { UNIPROT                          } from './modules/api_clients/main.nf'
+include { BIOMART                          } from './modules/api_clients/main.nf'
+include { CONCAT_TSV                       } from './modules/api_clients/main.nf'           addParams(OUTPUT: "${params.outDir}/featurecounts")
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT SUBWORKFLOWS
@@ -197,6 +202,40 @@ workflow FEATURECOUNTS_BAM {
         SUBREAD_FEATURECOUNTS.out.counts
             .map { it -> it[1] }
             .collect()
+    )
+}
+
+worflow ANNOTATE_CSV {
+    // if start with ENST, then use Ensembl BioMart to extract gene names; 500 IDs per request
+    Channel
+        .fromPath (
+            "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts_test.csv",
+            checkIfExists: true
+        )
+        .splitCsv( header: true )
+        .map { row -> row.Geneid }
+        .filter(~/^ENST.*/)
+        .collate(500)
+        .set { ch_biomart }
+
+    // if does not start with ENST, then use UniProt to extract gene names
+    Channel
+        .fromPath (
+            "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts_test.csv",
+            checkIfExists: true
+        )
+        .splitCsv( header: true )
+        .map { row -> row.Geneid }
+        .filter(~/^((?!ENST).)*$/)
+        .set { ch_uniprot }
+
+    BIOMART( ch_biomart )
+    UNIPROT(ch_uniprot)
+
+    CONCAT_TSV (
+        BIOMART.out.geneName.concat(
+            UNIPROT.out.geneName
+        ).collect()
     )
 }
 
