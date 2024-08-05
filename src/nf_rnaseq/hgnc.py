@@ -11,43 +11,37 @@ logger = logging.getLogger(__name__)
 class HGNC(APIClient):
     """Class to interact with HGNC API."""
 
-    search_id: str
+    identifier: str
     """str: ID on which to search."""
     search_term: str
     """str: Term from, https://www.genenames.org/help/rest/ on which to search."""
     url_base: str = "https://rest.genenames.org/fetch"
     """str: URL base for HGNC API."""
-    header: str = "{'Accept': 'application/json'}"
-    """str: Header for HGNC API (use ast.as_literal for dict)."""
-    # url_query: str = None
-    # """str: URL query for HGNC API."""
-    # json: dict = None
-    # """dict: JSON response from UniProt API."""
-    # text: str = None
-    # """str: Text response from UniProt API (if no json)."""
-    # hgnc_gene_name: list[str] = None
-    # """str: HGNC gene name."""
+    headers: str = "{'Accept': 'application/json'}"
+    """str: headers for HGNC API (use ast.as_literal for dict)."""
+    url_query: str = None
+    """str: URL query for HGNC API."""
+    json: dict = None
+    """dict: JSON response from UniProt API."""
+    text: str = None
+    """str: Text response from UniProt API (if no json)."""
+    gene_names: list[str] = None
+    """str: HGNC gene name."""
 
     def __post_init__(self):
         self.create_query_url()
         self.query_api()
-        self.maybe_set_json_properties()
-        self.maybe_get_hgnc_gene_name()
+        self.maybe_get_gene_names()
 
     def create_query_url(self):
         """Create URL for HGNC API query."""
-        self.url_query = os.path.join(self.url_base, self.search_term, self.search_id)
+        self.url_query = os.path.join(self.url_base, self.search_term, self.identifier)
 
-    def maybe_set_json_properties(self):
-        """If self.json is not None, set properties of UniProt object using self.json."""
-        if self.json is not None:
-            HGNC(**self.json)
-
-    def maybe_get_hgnc_gene_name(self, str_symbol: str = "symbol") -> list[str]:
+    def maybe_get_gene_names(self, str_symbol: str = "symbol") -> list[str]:
         """Get list of gene names from UniProt ID and add as hgnc_gene_name attr."""
         try:
             list_genes = self.maybe_extract_list_from_hgnc_response_docs(str_symbol)
-            self.hgnc_gene_name = list_genes
+            self.gene_names = list_genes
         except (KeyError, AttributeError) as e:
             logging.error("Error at %s", "division", exc_info=e)
 
@@ -69,8 +63,8 @@ class HGNC(APIClient):
 
         """
         try:
-            if self.response["numFound"] >= 1:
-                list_output = [doc[str_to_extract] for doc in self.response["docs"]]
+            if self.json["response"]["numFound"] >= 1:
+                list_output = [doc[str_to_extract] for doc in self.json["response"]["docs"]]
             else:
                 list_output = []
             return list_output
