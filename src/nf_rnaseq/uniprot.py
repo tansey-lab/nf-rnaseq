@@ -2,45 +2,78 @@ import logging
 import os
 from dataclasses import dataclass
 
-from nf_rnaseq.api_schema import APIClient
+import requests
+
+from nf_rnaseq.api_schema import APIClientGET, APIClientPOST
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class UniProt(APIClient):
-    """Class to interact with UniProt API."""
-
-    identifier: str
-    """str: UniProt ID."""
-    search_term: str
-    """str: Term on which to search."""
-    url_base: str = "https://rest.uniprot.org/uniprotkb"
-    """str: URL base for UniProtKB API."""
-    url_query: str = None
-    """str: URL query for UniProt API."""
-    headers = None
-    """str: headers for UniProt API (use ast.as_literal for dict)."""
-    json: dict = None
-    """dict: JSON response from UniProt API."""
-    text: str = None
-    """str: Text response from UniProt API (if no json)."""
-    gene_names: list[str] = None
-    """list[str]: Gene name(s)."""
+class UniProt(APIClientGET):
+    """Class to interact with UniProt API for single identifier."""
 
     def __post_init__(self):
-        self.create_query_url()
-        self.query_api()
-        self.maybe_get_gene_names()
+        super().__post_init__()
 
     def create_query_url(self):
         """Create URL for UniProt API query."""
         self.url_query = os.path.join(self.url_base, self.identifier + ".json")
 
+    def check_if_job_ready(self, res: requests.Response):
+        """Check if the job is ready."""
+        pass
+
     def maybe_get_gene_names(self):
-        """Get list of gene names from UniProt ID and add as gene_name attr."""
+        """Get list of gene names from UniProt ID and add as list_gene_names attr."""
         try:
             list_genes = [str(gene["geneName"]["value"]) for gene in self.json["genes"]]
-            self.gene_names = list_genes
+            self.list_gene_names = list_genes
+        except (KeyError, AttributeError) as e:
+            logging.error("Error at %s", "division", exc_info=e)
+
+
+@dataclass
+class UniProtGET(APIClientGET):
+    """Class to interact with UniProt API bulk download for list of identifiers via GET."""
+
+    jobId: str
+    """str: Job ID for UniProt bulk download."""
+
+    def __post_init__(self):
+        super().__post_init__()
+
+    def create_query_url(self):
+        """Create URL for UniProt API query."""
+        self.url_query = os.path.join(self.url_base, self.job)
+
+    def maybe_get_gene_names(self):
+        """Get list of gene names from UniProt ID and add as list_gene_names attr."""
+        try:
+            list_genes = [str(gene["geneName"]["value"]) for gene in self.json["genes"]]
+            self.list_gene_names = list_genes
+        except (KeyError, AttributeError) as e:
+            logging.error("Error at %s", "division", exc_info=e)
+
+    def check_if_job_ready(self, res: requests.Response):
+        """Check if the job is ready."""
+        pass
+
+
+@dataclass
+class UniProtPOST(APIClientPOST):
+    """Class to interact with UniProt API bulk download for list of identifiers via POST."""
+
+    def __post_init__(self):
+        super().__post_init__()
+
+    def create_query_url(self):
+        """Create URL for UniProt API query."""
+        self.url_query = self.url_base
+
+    def maybe_get_job_id(self):
+        """Get job ID from UniProt and add as job attr."""
+        try:
+            self.jobId = self.json["jobId"]
         except (KeyError, AttributeError) as e:
             logging.error("Error at %s", "division", exc_info=e)

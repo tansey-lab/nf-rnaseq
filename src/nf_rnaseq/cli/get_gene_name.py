@@ -2,22 +2,7 @@
 
 import argparse
 
-from nf_rnaseq import biomart, config, hgnc, uniprot
-
-DICT_DATABASES = {
-    "BioMart": {
-        "api_object": biomart.BioMart,
-        "search_term": "ensembl_transcript_id_version",
-    },
-    "HGNC": {
-        "api_object": hgnc.HGNC,
-        "search_term": "mane_select",
-    },
-    "UniProt": {
-        "api_object": uniprot.UniProt,
-        "search_term": None,
-    },
-}
+from nf_rnaseq import config, variables
 
 
 def parsearg_utils():
@@ -75,34 +60,50 @@ def main():
     if args.cachePath != "":
         config.set_request_cache(args.cachePath)
 
+    DICT_DATABASES = variables.DICT_DATABASES
     try:
-        api_obj = DICT_DATABASES[args.database]["api_object"](
-            identifier=inputs_ids,
-            search_term=DICT_DATABASES[args.database]["search_term"],
-        )
-        id_out = api_obj.gene_names
+        if "POST" in DICT_DATABASES[args.database].keys():
+            dict_post = DICT_DATABASES[args.database]["POST"]
+            post_obj = dict_post["api_object"](
+                identifier=inputs_ids,
+                term_in=dict_post["term_in"],
+                term_out=dict_post["term_out"],
+                url_base=dict_post["url_base"],
+            )
+            dict_get = DICT_DATABASES[args.database]["GET"]
+            api_obj = dict_get["api_object"](
+                identifier=inputs_ids,
+                term_in=dict_get["term_in"],
+                term_out=dict_get["term_out"],
+                url_base=dict_get["url_base"],
+                jobId=post_obj.jobId,
+                headers=dict_get["headers"],
+            )
+        else:
+            dict_get = DICT_DATABASES[args.database]["GET"]
+            api_obj = dict_get["api_object"](
+                identifier=inputs_ids,
+                term_in=dict_get["term_in"],
+                term_out=dict_get["term_out"],
+                url_base=dict_get["url_base"],
+                headers=dict_get["headers"],
+            )
     except KeyError as e:
         raise UserWarning(f"Database {args.database} not in DICT_DATABASES.keys()") from e
 
-    # set delimiter depending on tsv flag
     if args.tsv:
         delim = "\t"
     else:
         delim = ","
 
-    # if inputs are a list, split and iterate
-    list_inputs = inputs_ids.split(", ")
     str_out = ""
-    if len(list_inputs) > 1:
-        for idx, input_id in enumerate(list_inputs):
-            str1 = f"{input_id.ljust(20)}"
-            str2 = f"{str(id_out[idx]).ljust(20)}"
-            str3 = f"{args.database}"
-            str_out += f"{str1}{delim}{str2}{delim}{str3}\n"
-    else:
-        str1 = f"{args.input.ljust(20)}"
+    for id_in, id_out in zip(
+        api_obj.list_identifier,
+        api_obj.list_gene_names,
+        strict=False,
+    ):
+        str1 = f"{id_in.ljust(20)}"
         str2 = f"{str(id_out).ljust(20)}"
-        str3 = f"{args.database}"
-        str_out = f"{str1}{delim}{str2}{delim}{str3}\n"
+        str_out += f"{str1}{delim}{str2}{delim}{args.database}\n"
 
     print(str_out)

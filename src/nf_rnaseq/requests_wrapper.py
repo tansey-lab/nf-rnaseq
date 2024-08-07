@@ -5,6 +5,7 @@ from requests.adapters import HTTPAdapter, Retry
 from requests_cache import CachedSession
 
 REQUEST_CACHE_VAR = "REQUEST_CACHE"
+"""str: Environment variable for request cache file prefix."""
 
 
 def add_retry_to_session(
