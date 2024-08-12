@@ -92,6 +92,6 @@ process CONCAT_TSV {
 
     script:
     """
-    grep -h . ${tsvFiles} > gene_name_concat.tsv
+    echo -e "original_id\tgene_name\tsource" > gene_name_concat.tsv && grep -h . ${tsvFiles} >> gene_name_concat.tsv
     """
 }
