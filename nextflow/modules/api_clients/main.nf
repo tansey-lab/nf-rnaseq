@@ -5,7 +5,7 @@ process HGNC {
     val(inputId)
 
     output:
-    path("${inputId}_hgnc.tsv"), emit: geneName
+    path("${inputId}_hgnc.tsv"), emit: geneTSV
 
     script:
     """
@@ -25,7 +25,7 @@ process UNIPROT {
     val(inputId)
 
     output:
-    path("${inputId}_uniprot.tsv"), emit: geneName
+    path("${inputId}_uniprot.tsv"), emit: geneTSV
 
     script:
     """
@@ -38,6 +38,27 @@ process UNIPROT {
     """
 }
 
+process UNIPROT_BULK {
+    conda "${params.condaEnv}"
+
+    input:
+    val(inputIds)
+
+    output:
+    path("${uuid}_uniprot.tsv"), emit: geneTSV
+
+    script:
+    def uuid = UUID.randomUUID().toString()
+    """
+    get_gene_name \\
+        -i "${inputIds}" \\
+        -d UniProtBULK \\
+        -c ${params.requestsCache} \\
+        -t \\
+        > ${uuid}_uniprot.tsv
+    """
+}
+
 process BIOMART {
     conda "${params.condaEnv}"
 
@@ -45,7 +66,7 @@ process BIOMART {
     val(inputIds)
 
     output:
-    path("*_biomart.tsv"), emit: geneName
+    path("${uuid}_biomart.tsv"), emit: geneTSV
 
     script:
     def uuid = UUID.randomUUID().toString()
