@@ -24,8 +24,8 @@ class HGNC(APIClientGET):
         self.url_query = os.path.join(self.url_base, self.term_in, self.identifier)
 
     def check_if_job_ready(self, res: requests.Response):
-        """Check if the job is ready."""
-        pass
+        """Check if the job is ready; only necessary for POST + GET otherwise return True."""
+        return True
 
     def maybe_get_gene_names(self):
         """Get list of gene names from mane_select term and add as list_gene_names attr."""

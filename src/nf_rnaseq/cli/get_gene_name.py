@@ -62,7 +62,7 @@ def main():
 
     DICT_DATABASES = variables.DICT_DATABASES
     try:
-        if "POST" in DICT_DATABASES[args.database].keys():
+        if "POST" in DICT_DATABASES[args.database]:
             dict_post = DICT_DATABASES[args.database]["POST"]
             post_obj = dict_post["api_object"](
                 identifier=inputs_ids,
@@ -76,17 +76,17 @@ def main():
                 term_in=dict_get["term_in"],
                 term_out=dict_get["term_out"],
                 url_base=dict_get["url_base"],
-                jobId=post_obj.jobId,
                 headers=dict_get["headers"],
+                jobId=post_obj.jobId,
             )
         else:
             dict_get = DICT_DATABASES[args.database]["GET"]
             api_obj = dict_get["api_object"](
-                identifier=inputs_ids,
                 term_in=dict_get["term_in"],
                 term_out=dict_get["term_out"],
                 url_base=dict_get["url_base"],
                 headers=dict_get["headers"],
+                identifier=inputs_ids,
             )
     except KeyError as e:
         raise UserWarning(f"Database {args.database} not in DICT_DATABASES.keys()") from e

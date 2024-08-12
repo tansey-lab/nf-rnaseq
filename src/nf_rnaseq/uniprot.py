@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from dataclasses import dataclass
 
 import numpy as np
@@ -22,8 +23,8 @@ class UniProt(APIClientGET):
         self.url_query = os.path.join(self.url_base, self.identifier + ".json")
 
     def check_if_job_ready(self, res: requests.Response):
-        """Check if the job is ready."""
-        pass
+        """Check if the job is ready; only necessary for POST + GET otherwise return True."""
+        return True
 
     def maybe_get_gene_names(self):
         """Get list of gene names from UniProt ID and add as list_gene_names attr."""
@@ -38,8 +39,8 @@ class UniProt(APIClientGET):
 class UniProtGET(APIClientGET):
     """Class to interact with UniProt API bulk download for list of identifiers via GET."""
 
-    jobId: str
-    """str: Job ID for UniProt bulk download."""
+    jobId: str | None = None
+    """str: Job ID for bulk download; applies to UniProt bulk downloading."""
 
     def __post_init__(self):
         super().__post_init__()
@@ -48,27 +49,39 @@ class UniProtGET(APIClientGET):
         """Create URL for UniProt API query."""
         self.url_query = os.path.join(self.url_base, self.jobId)
 
+    def check_if_job_ready(self):
+        """Check if the job is ready."""
+        while True:
+            response = requests.get(self.url_query)
+            self.check_response(response)
+            if "jobStatus" in response.json():
+                if response.json()["jobStatus"] == "RUNNING":
+                    print(f"Retrying in {self.polling_interval}s")
+                    time.sleep(self.polling_interval)
+                else:
+                    raise Exception(response.json()["jobStatus"])
+            else:
+                return bool(response.json()["results"] or response.json()["failedIds"])
+
     def maybe_get_gene_names(self):
         """Get list of gene names from UniProt ID and add as list_gene_names attr."""
-        str_results = "results"
-        str_failedIds = "failedIds"
-
         list_identifier = []
         list_gene_names = []
-        if str_results in self.json.keys():
-            list_identifier.append([i["from"] for i in self.json[str_results]])
-            list_gene_names.append([i["to"] for i in self.json[str_results]])
-        if str_failedIds in self.json.keys():
-            # TODO: confirm format for multiple failed IDs (list or list of lists)
-            list_identifier.append(self.json[str_failedIds])
-            list_gene_names.append([np.nan * len(self.json[str_failedIds])])
+
+        str_results = "results"
+        if str_results in self.json:
+            list_results = self.json[str_results]
+            list_identifier.extend([i["from"] for i in list_results])
+            list_gene_names.extend([i["to"] for i in list_results])
+
+        str_failedIds = "failedIds"
+        if str_failedIds in self.json:
+            list_failed = self.json[str_failedIds]
+            list_identifier.extend(list_failed)
+            list_gene_names.extend(list(np.repeat(np.nan, len(list_failed))))
 
         self.list_identifier = list_identifier
         self.list_gene_names = list_gene_names
-
-    def check_if_job_ready(self, res: requests.Response):
-        """Check if the job is ready."""
-        pass
 
 
 @dataclass

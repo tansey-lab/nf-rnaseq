@@ -72,13 +72,12 @@ class APIClientGET(APIClient):
             response = session.get(self.url_query, headers=ast.literal_eval(self.headers))
 
         self.check_response(response)
-        self.check_if_job_ready(response)
-
-        try:
-            self.json = response.json()
-        except requests.exceptions.JSONDecodeError as e:
-            logging.error("Error at %s", "division", exc_info=e)
-            self.text = response.text
+        if self.check_if_job_ready():
+            try:
+                self.json = response.json()
+            except requests.exceptions.JSONDecodeError as e:
+                logging.error("Error at %s", "division", exc_info=e)
+                self.text = response.text
 
     @abstractmethod
     def create_query_url(self):
@@ -104,6 +103,7 @@ class APIClientPOST(APIClient):
         super().__post_init__()
         self.create_query_url()
         self.query_api()
+        self.maybe_get_job_id()
 
     def query_api(self):
         """Get response from API which tries to save as json in instance; otherwise saves as text."""

@@ -29,8 +29,8 @@ class BioMart(APIClientGET):
         )
 
     def check_if_job_ready(self, res: requests.Response):
-        """Check if the job is ready."""
-        pass
+        """Check if the job is ready; only necessary for POST + GET otherwise return True."""
+        return True
 
     def maybe_get_gene_names(self):
         """Get dataframe of transcript IDs and gene names from transcript IDs and add as list_gene_names attr."""
