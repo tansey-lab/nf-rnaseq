@@ -85,7 +85,7 @@ class APIClientGET(APIClient):
         ...
 
     @abstractmethod
-    def check_if_job_ready(self, res: requests.Response):
+    def check_if_job_ready(self):
         """Check if the job is ready."""
         ...
 

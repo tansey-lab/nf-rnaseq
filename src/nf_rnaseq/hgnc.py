@@ -2,8 +2,6 @@ import logging
 import os
 from dataclasses import dataclass
 
-import requests
-
 from nf_rnaseq.api_schema import APIClientGET
 
 logger = logging.getLogger(__name__)
@@ -23,7 +21,7 @@ class HGNC(APIClientGET):
         """Create URL for HGNC API query."""
         self.url_query = os.path.join(self.url_base, self.term_in, self.identifier)
 
-    def check_if_job_ready(self, res: requests.Response):
+    def check_if_job_ready(self):
         """Check if the job is ready; only necessary for POST + GET otherwise return True."""
         return True
 

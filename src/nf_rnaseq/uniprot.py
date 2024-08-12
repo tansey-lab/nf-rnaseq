@@ -22,7 +22,7 @@ class UniProt(APIClientGET):
         """Create URL for UniProt API query."""
         self.url_query = os.path.join(self.url_base, self.identifier + ".json")
 
-    def check_if_job_ready(self, res: requests.Response):
+    def check_if_job_ready(self):
         """Check if the job is ready; only necessary for POST + GET otherwise return True."""
         return True
 

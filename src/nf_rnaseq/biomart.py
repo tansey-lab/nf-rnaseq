@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from io import StringIO
 
 import pandas as pd
-import requests
 
 from nf_rnaseq.api_schema import APIClientGET
 
@@ -28,7 +27,7 @@ class BioMart(APIClientGET):
             .replace("<TERM_OUT>", self.term_out)
         )
 
-    def check_if_job_ready(self, res: requests.Response):
+    def check_if_job_ready(self):
         """Check if the job is ready; only necessary for POST + GET otherwise return True."""
         return True
 
