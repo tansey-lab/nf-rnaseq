@@ -36,9 +36,18 @@ class BioMart(APIClientGET):
         try:
             df = pd.read_csv(StringIO(self.text), sep="\t", header=None)
             df.columns = ["in", "out"]
-            df_agg = df.groupby("in", sort=False).agg(list)
+            df_agg = df.groupby("in", sort=False).agg(list).reset_index()
 
-            # check that all input IDs are in the output dataframe
+            # some input IDs are in the output dataframe, so add back as [None] to the output
+            list_missing = [i for i in self.list_identifier if i not in df_agg["in"].tolist()]
+            df_missing = pd.DataFrame(
+                {
+                    "in": list_missing,
+                    "out": [[None] for i in range(len(list_missing))],
+                }
+            )
+            df_agg = pd.concat([df_agg, df_missing], axis=0)
+
             assert len([i for i in self.list_identifier if i in df_agg["in"].tolist()]) == len(self.list_identifier)
 
             self.list_identifier = df_agg["in"].tolist()
