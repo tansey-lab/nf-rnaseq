@@ -4,6 +4,7 @@ import time
 from dataclasses import dataclass
 
 import numpy as np
+import pandas as pd
 import requests
 
 from nf_rnaseq.api_schema import APIClientGET, APIClientPOST
@@ -80,8 +81,11 @@ class UniProtGET(APIClientGET):
             list_identifier.extend(list_failed)
             list_gene_names.extend(list(np.repeat(np.nan, len(list_failed))))
 
-        self.list_identifier = list_identifier
-        self.list_gene_names = list_gene_names
+        df = pd.DataFrame({"in": list_identifier, "out": list_gene_names})
+        df_agg = df.groupby("in", sort=False).agg(list).reset_index()
+
+        self.list_identifier = df_agg["in"].tolist()
+        self.list_gene_names = df_agg["out"].tolist()
 
 
 @dataclass
