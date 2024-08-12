@@ -75,7 +75,7 @@ include { RUN_MULTIQC as RUN_MULTIQC_FC    } from './modules/multiqc/main.nf'   
 include { MERGE_FEATURECOUNTS              } from './modules/subread/featurecounts/main.nf' addParams(OUTPUT: "${params.outDir}/featurecounts")
 
 // add annotation
-include { UNIPROT                          } from './modules/api_clients/main.nf'
+include { UNIPROT_BULK                     } from './modules/api_clients/main.nf'
 include { BIOMART                          } from './modules/api_clients/main.nf'
 include { CONCAT_TSV                       } from './modules/api_clients/main.nf'           addParams(OUTPUT: "${params.outDir}/featurecounts")
 
@@ -205,36 +205,34 @@ workflow FEATURECOUNTS_BAM {
     )
 }
 
-worflow ANNOTATE_CSV {
-    // if start with ENST, then use Ensembl BioMart to extract gene names; 500 IDs per request
+workflow ANNOTATE_CSV {
     Channel
         .fromPath (
-            "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts_test.csv",
+            "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts.csv",
             checkIfExists: true
         )
         .splitCsv( header: true )
         .map { row -> row.Geneid }
+        .set { ch_featurecounts }
+
+    // if start with ENST, then use Ensembl BioMart to extract gene names; 500 IDs per request
+    ch_featurecounts
         .filter(~/^ENST.*/)
-        .collate(500)
+        .collate(100) // reduced from 500 to try to resolve 414 Request-URI Too Large Error
         .set { ch_biomart }
 
     // if does not start with ENST, then use UniProt to extract gene names
-    Channel
-        .fromPath (
-            "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts_test.csv",
-            checkIfExists: true
-        )
-        .splitCsv( header: true )
-        .map { row -> row.Geneid }
+    ch_featurecounts
         .filter(~/^((?!ENST).)*$/)
+        .collate(10000) // filters are not supported for mapping results with IDs more than 10,000
         .set { ch_uniprot }
 
     BIOMART( ch_biomart )
-    UNIPROT(ch_uniprot)
+    UNIPROT_BULK( ch_uniprot )
 
     CONCAT_TSV (
-        BIOMART.out.geneName.concat(
-            UNIPROT.out.geneName
+        BIOMART.out.geneTSV.concat(
+            UNIPROT_BULK.out.geneTSV
         ).collect()
     )
 }

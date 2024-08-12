@@ -2,46 +2,34 @@ import logging
 import os
 from dataclasses import dataclass
 
-from nf_rnaseq.api_schema import APIClient
+from nf_rnaseq.api_schema import APIClientGET
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class HGNC(APIClient):
+class HGNC(APIClientGET):
     """Class to interact with HGNC API."""
 
-    identifier: str
-    """str: ID on which to search."""
-    search_term: str
-    """str: Term from, https://www.genenames.org/help/rest/ on which to search."""
-    url_base: str = "https://rest.genenames.org/fetch"
-    """str: URL base for HGNC API."""
-    headers: str = "{'Accept': 'application/json'}"
-    """str: headers for HGNC API (use ast.as_literal for dict)."""
-    url_query: str = None
-    """str: URL query for HGNC API."""
-    json: dict = None
-    """dict: JSON response from UniProt API."""
-    text: str = None
-    """str: Text response from UniProt API (if no json)."""
-    gene_names: list[str] = None
-    """str: HGNC gene name."""
-
     def __post_init__(self):
+        self.process_identifier()
         self.create_query_url()
         self.query_api()
         self.maybe_get_gene_names()
 
     def create_query_url(self):
         """Create URL for HGNC API query."""
-        self.url_query = os.path.join(self.url_base, self.search_term, self.identifier)
+        self.url_query = os.path.join(self.url_base, self.term_in, self.identifier)
 
-    def maybe_get_gene_names(self, str_symbol: str = "symbol") -> list[str]:
-        """Get list of gene names from UniProt ID and add as hgnc_gene_name attr."""
+    def check_if_job_ready(self):
+        """Check if the job is ready; only necessary for POST + GET otherwise return True."""
+        return True
+
+    def maybe_get_gene_names(self):
+        """Get list of gene names from mane_select term and add as list_gene_names attr."""
         try:
-            list_genes = self.maybe_extract_list_from_hgnc_response_docs(str_symbol)
-            self.gene_names = list_genes
+            list_genes = self.maybe_extract_list_from_hgnc_response_docs(self.term_out)
+            self.list_gene_names = list_genes
         except (KeyError, AttributeError) as e:
             logging.error("Error at %s", "division", exc_info=e)
 
