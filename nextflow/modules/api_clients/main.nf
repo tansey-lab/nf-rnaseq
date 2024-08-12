@@ -45,7 +45,7 @@ process UNIPROT_BULK {
     val(inputIds)
 
     output:
-    path("${uuid}_uniprot.tsv"), emit: geneTSV
+    path("*_uniprot.tsv"), emit: geneTSV
 
     script:
     def uuid = UUID.randomUUID().toString()
@@ -66,7 +66,7 @@ process BIOMART {
     val(inputIds)
 
     output:
-    path("${uuid}_biomart.tsv"), emit: geneTSV
+    path("*_biomart.tsv"), emit: geneTSV
 
     script:
     def uuid = UUID.randomUUID().toString()

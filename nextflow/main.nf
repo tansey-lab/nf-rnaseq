@@ -206,7 +206,6 @@ workflow FEATURECOUNTS_BAM {
 }
 
 workflow ANNOTATE_CSV {
-    // if start with ENST, then use Ensembl BioMart to extract gene names; 500 IDs per request
     Channel
         .fromPath (
             "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts.csv",
@@ -214,18 +213,16 @@ workflow ANNOTATE_CSV {
         )
         .splitCsv( header: true )
         .map { row -> row.Geneid }
+        .set { ch_featurecounts }
+
+    // if start with ENST, then use Ensembl BioMart to extract gene names; 500 IDs per request
+    ch_featurecounts
         .filter(~/^ENST.*/)
         .collate(100) // reduced from 500 to try to resolve 414 Request-URI Too Large Error
         .set { ch_biomart }
 
     // if does not start with ENST, then use UniProt to extract gene names
-    Channel
-        .fromPath (
-            "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts.csv",
-            checkIfExists: true
-        )
-        .splitCsv( header: true )
-        .map { row -> row.Geneid }
+    ch_featurecounts
         .filter(~/^((?!ENST).)*$/)
         .collate(10000) // filters are not supported for mapping results with IDs more than 10,000
         .set { ch_uniprot }
@@ -235,7 +232,7 @@ workflow ANNOTATE_CSV {
 
     CONCAT_TSV (
         BIOMART.out.geneTSV.concat(
-            UNIPROT.out.geneTSV
+            UNIPROT_BULK.out.geneTSV
         ).collect()
     )
 }
