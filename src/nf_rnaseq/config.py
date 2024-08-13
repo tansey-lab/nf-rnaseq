@@ -1,16 +1,16 @@
 import os
 
 REQUESTS_CACHE_VAR = "REQUESTS_CACHE"
-"""str: Environment variable for request cache file prefix."""
+"""str: Environment variable for requests cache file prefix."""
 
 
-def set_request_cache(val: str) -> None:
-    """Set the request cache path in environment variables.
+def set_requests_cache(val: str) -> None:
+    """Set the requests cache path in environment variables.
 
     Parameters
     ----------
     val : str
-        Request cache path
+        Requests cache path
 
     Returns
     -------
@@ -20,13 +20,13 @@ def set_request_cache(val: str) -> None:
     os.environ[REQUESTS_CACHE_VAR] = val
 
 
-def maybe_get_request_cache() -> str | None:
-    """Get the request cache path from the environment.
+def maybe_get_requests_cache() -> str | None:
+    """Get the requests cache path from the environment.
 
     Returns
     -------
     str | None
-        Request cache path as string if exists, otherwise None
+        Requests cache path as string if exists, otherwise None
 
     """
     try:

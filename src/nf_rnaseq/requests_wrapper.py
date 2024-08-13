@@ -1,11 +1,9 @@
-import os
 from functools import cache
 
 from requests.adapters import HTTPAdapter, Retry
 from requests_cache import CachedSession
 
-REQUEST_CACHE_VAR = "REQUEST_CACHE"
-"""str: Environment variable for request cache file prefix."""
+from nf_rnaseq import config
 
 
 def add_retry_to_session(
@@ -55,10 +53,9 @@ def get_cached_session():
         Cached session object
 
     """
-    if REQUEST_CACHE_VAR in os.environ:
-        cache_location = os.environ[REQUEST_CACHE_VAR]
-
-        session = CachedSession(cache_location, allowable_codes=(200, 404, 400), backend="sqlite")
+    cache_location = config.maybe_get_requests_cache()
+    if cache_location is not None:
+        session = CachedSession(cache_location, allowable_codes=(200,), backend="sqlite")
     else:
         session = CachedSession(backend="memory")
 
