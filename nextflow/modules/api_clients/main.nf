@@ -12,7 +12,7 @@ process HGNC {
     get_gene_name \\
         -i ${inputId} \\
         -d HGNC \\
-        -c ${params.requestsCache} \\
+        -c "${params.outDir}/requests_cache" \\
         -t \\
         > ${inputId}_hgnc.tsv
     """
@@ -32,7 +32,7 @@ process UNIPROT {
     get_gene_name \\
         -i ${inputId} \\
         -d UniProt \\
-        -c ${params.cacheDir} \\
+        -c "${params.outDir}/requests_cache" \\
         -t \\
         > ${inputId}_uniprot.tsv
     """
@@ -53,7 +53,7 @@ process UNIPROT_BULK {
     get_gene_name \\
         -i "${inputIds}" \\
         -d UniProtBULK \\
-        -c ${params.requestsCache} \\
+        -c "${params.outDir}/requests_cache" \\
         -t \\
         > ${uuid}_uniprot.tsv
     """
@@ -74,7 +74,7 @@ process BIOMART {
     get_gene_name \\
         -i "${inputIds}" \\
         -d BioMart \\
-        -c ${params.requestsCache} \\
+        -c "${params.outDir}/requests_cache" \\
         -t \\
         > ${uuid}_biomart.tsv
     """

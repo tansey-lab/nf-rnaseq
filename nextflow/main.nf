@@ -208,7 +208,8 @@ workflow FEATURECOUNTS_BAM {
 workflow ANNOTATE_CSV {
     Channel
         .fromPath (
-            "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts.csv",
+            // "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts.csv",
+            "${params.outDir}/${params.filePrefix}_featureCounts_test.csv",
             checkIfExists: true
         )
         .splitCsv( header: true )
@@ -224,7 +225,7 @@ workflow ANNOTATE_CSV {
     // if does not start with ENST, then use UniProt to extract gene names
     ch_featurecounts
         .filter(~/^((?!ENST).)*$/)
-        .collate(10000) // filters are not supported for mapping results with IDs more than 10,000
+        .collate(100) // filters are not supported for mapping results with IDs more than 10,000
         .set { ch_uniprot }
 
     BIOMART( ch_biomart )
