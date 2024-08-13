@@ -45,10 +45,10 @@ process MERGE_FEATURECOUNTS {
     path(featureCounts)
 
     output:
-    path("{filePrefix}_featureCounts.csv"), emit: counts
+    path("${filePrefix}_featureCounts.csv"), emit: counts
 
     script:
     """
-    python merge_featureCounts.py -f ${featureCounts} -p ${filePrefix}
+    merge_featureCounts.py -f ${featureCounts} -p ${filePrefix}
     """
 }
