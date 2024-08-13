@@ -58,7 +58,7 @@ def main():
     inputs_ids = args.input.replace("[", "").replace("]", "")
 
     if args.cachePath != "":
-        config.set_request_cache(args.cachePath)
+        config.set_requests_cache(args.cachePath)
 
     DICT_DATABASES = variables.DICT_DATABASES
     try:
