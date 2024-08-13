@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import requests
 
+# from nf_rnaseq import requests_wrapper
 from nf_rnaseq.api_schema import APIClientGET, APIClientPOST
 
 logger = logging.getLogger(__name__)
@@ -52,17 +53,21 @@ class UniProtGET(APIClientGET):
 
     def check_if_job_ready(self):
         """Check if the job is ready."""
+        # session = requests_wrapper.get_cached_session()
+        i = 0
         while True:
+            # response = session.get(self.url_query)
             response = requests.get(self.url_query)
             self.check_response(response)
-            if "jobStatus" in response.json():
-                if response.json()["jobStatus"] == "RUNNING":
-                    print(f"Retrying in {self.polling_interval}s")
-                    time.sleep(self.polling_interval)
-                else:
-                    raise Exception(response.json()["jobStatus"])
+            j = response.json()
+            if "results" in j or "failedIds" in j:
+                return bool(j["results"] or j["failedIds"])
             else:
-                return bool(response.json()["results"] or response.json()["failedIds"])
+                i += 1
+                if i >= 10:
+                    raise Exception(f"{self.jobId}: {response.json()['jobStatus']}")
+                else:
+                    time.sleep(self.polling_interval)
 
     def maybe_get_gene_names(self):
         """Get list of gene names from UniProt ID and add as list_gene_names attr."""
