@@ -2,6 +2,7 @@
 
 import argparse
 import glob
+import os
 
 import pandas as pd
 
@@ -89,7 +90,7 @@ def merge_featureCounts(
         elif iter > 0:
             df_temp = df.iloc[:, [0, 6]]
             df_count_mat = pd.merge(df_count_mat, df_temp, how="left", on=gene_column_name)
-    df_count_mat.to_csv(f"{prefix}_featureCounts.csv", index=False)
+    df_count_mat.to_csv(os.path.join(os.getcwd(), f"{prefix}_featureCounts.csv"), index=False)
 
 
 def main():
