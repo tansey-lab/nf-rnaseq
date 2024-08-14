@@ -75,8 +75,8 @@ include { RUN_MULTIQC as RUN_MULTIQC_FC    } from './modules/multiqc/main.nf'   
 include { MERGE_FEATURECOUNTS              } from './modules/subread/featurecounts/main.nf' addParams(OUTPUT: "${params.outDir}/featurecounts")
 
 // add annotation
-include { UNIPROT_BULK                     } from './modules/api_clients/main.nf'
-include { BIOMART                          } from './modules/api_clients/main.nf'
+include { QUERY_API as QUERY_BIOMART       } from './modules/api_clients/main.nf'
+include { QUERY_API as QUERY_UNIPROT       } from './modules/api_clients/main.nf'
 include { CONCAT_TSV                       } from './modules/api_clients/main.nf'           addParams(OUTPUT: "${params.outDir}/featurecounts")
 
 /*
@@ -219,21 +219,21 @@ workflow ANNOTATE_CSV {
     // if start with ENST, then use Ensembl BioMart to extract gene names; 500 IDs per request
     ch_featurecounts
         .filter(~/^ENST.*/)
-        .collate(100) // reduced from 500 to try to resolve 414 Request-URI Too Large Error
+        .collate(350) // reduced from 500 to try to resolve 414 Request-URI Too Large Error
         .set { ch_biomart }
 
     // if does not start with ENST, then use UniProt to extract gene names
     ch_featurecounts
         .filter(~/^((?!ENST).)*$/)
-        .collate(100) // filters are not supported for mapping results with IDs more than 10,000
+        .collate(5000) // 10,000: Total number of "mapped to" ids allowed with filtering; decreased to allow for multi-mapping
         .set { ch_uniprot }
 
-    BIOMART( ch_biomart )
-    UNIPROT_BULK( ch_uniprot )
+    QUERY_BIOMART( ch_biomart, "BioMart" )
+    QUERY_UNIPROT( ch_uniprot, "UniProtBULK" )
 
     CONCAT_TSV (
-        BIOMART.out.geneTSV.concat(
-            UNIPROT_BULK.out.geneTSV
+        QUERY_BIOMART.out.geneTSV.concat(
+            QUERY_UNIPROT.out.geneTSV
         ).collect()
     )
 }
