@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
 import argparse
+import logging
 
 from nf_rnaseq import config, variables
+from nf_rnaseq.log_config import add_logging_flags, configure_logging
+
+logger = logging.getLogger(__name__)
 
 
 def parsearg_utils():
@@ -47,19 +51,23 @@ def parsearg_utils():
         action="store_true",
     )
 
-    args = parser.parse_args()
+    parser = add_logging_flags(parser)
 
-    return args
+    return parser
 
 
 def main():
     """Get HGNC gene name from string input."""
-    args = parsearg_utils()
+    configure_logging()
+    args = parsearg_utils().parse_args()
+
     inputs_ids = args.input.replace("[", "").replace("]", "")
 
     if args.cachePath != "":
+        logger.info(f"Using cache at {args.cachePath}")
         config.set_requests_cache(args.cachePath)
 
+    logger.info(f"Querying API for {args.database}")
     DICT_DATABASES = variables.DICT_DATABASES
     try:
         if "POST" in DICT_DATABASES[args.database]:
