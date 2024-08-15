@@ -64,7 +64,7 @@ def main():
     inputs_ids = args.input.replace("[", "").replace("]", "")
 
     if args.cachePath != "":
-        logger.info(f"Using cache at {args.cachePath}")
+        logger.info(f"Using cache at {args.cachePath}.sqlite")
         config.set_requests_cache(args.cachePath)
 
     logger.info(f"Querying API for {args.database}")
