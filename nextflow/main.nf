@@ -208,8 +208,7 @@ workflow FEATURECOUNTS_BAM {
 workflow ANNOTATE_CSV {
     Channel
         .fromPath (
-            // "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts.csv",
-            "${params.outDir}/${params.filePrefix}_featureCounts_test.csv",
+            "${params.outDir}/featurecounts/${params.filePrefix}_featureCounts.csv",
             checkIfExists: true
         )
         .splitCsv( header: true )
