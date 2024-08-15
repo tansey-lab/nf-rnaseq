@@ -28,8 +28,8 @@ class BioMart(APIClientGET):
         )
 
     def check_if_job_ready(self):
-        """Check if the job is ready; only necessary for POST + GET otherwise return True."""
-        return True
+        """Check if the job is ready; only necessary for POST + GET otherwise return False."""
+        return False
 
     def maybe_get_gene_names(self):
         """Get dataframe of transcript IDs and gene names from transcript IDs and add as list_gene_names attr."""
@@ -38,7 +38,7 @@ class BioMart(APIClientGET):
             df.columns = ["in", "out"]
             df_agg = df.groupby("in", sort=False).agg(list).reset_index()
 
-            # some input IDs are in the output dataframe, so add back as [None] to the output
+            # some input IDs are not in the output dataframe, so add back as [None] to the output
             list_missing = [i for i in self.list_identifier if i not in df_agg["in"].tolist()]
             df_missing = pd.DataFrame(
                 {
@@ -48,7 +48,8 @@ class BioMart(APIClientGET):
             )
             df_agg = pd.concat([df_agg, df_missing], axis=0)
 
-            assert len([i for i in self.list_identifier if i in df_agg["in"].tolist()]) == len(self.list_identifier)
+            list_check = [i for i in self.list_identifier if i in df_agg["in"].tolist()]
+            assert len(list_check) == len(self.list_identifier)
 
             self.list_identifier = df_agg["in"].tolist()
             self.list_gene_names = df_agg["out"].tolist()
