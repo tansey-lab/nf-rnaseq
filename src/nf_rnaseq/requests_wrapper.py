@@ -1,9 +1,12 @@
+import logging
 from functools import cache
 
 from requests.adapters import HTTPAdapter, Retry
 from requests_cache import CachedSession
 
 from nf_rnaseq import config
+
+logger = logging.getLogger(__name__)
 
 
 def add_retry_to_session(
@@ -55,7 +58,7 @@ def get_cached_session():
     """
     cache_location = config.maybe_get_requests_cache()
     if cache_location is not None:
-        session = CachedSession(cache_location, allowable_codes=(200,), backend="sqlite")
+        session = CachedSession(cache_location, allowable_codes=(200, 404, 400), backend="sqlite")
     else:
         session = CachedSession(backend="memory")
 
