@@ -7,6 +7,8 @@ import requests
 
 from nf_rnaseq import requests_wrapper
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class APIClient(ABC):
@@ -73,11 +75,15 @@ class APIClientGET(APIClient):
 
         self.check_response(response)
         if self.check_if_job_ready():
+            logger.info(f"\n{self.identifier}\n{self.json}")
+        else:
             try:
                 self.json = response.json()
+                logger.info(f"{self.identifier}\n{self.json}")
             except requests.exceptions.JSONDecodeError as e:
                 logging.error("Error at %s", "division", exc_info=e)
                 self.text = response.text
+                logger.info(f"{self.identifier}\n{self.text}")
 
     @abstractmethod
     def create_query_url(self):
