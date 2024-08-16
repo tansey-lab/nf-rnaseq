@@ -8,10 +8,9 @@
 
 .. autosummary::
     :toctree: generated
+    :recursive:
 
-    api_schema.APIClient
-    api_schema.APIClientGET
-    api_schema.APIClientPOST
+    api_schema
 ```
 
 ### BioMart
@@ -22,8 +21,9 @@
 
 .. autosummary::
     :toctree: generated
+    :recursive:
 
-    biomart.BioMart
+    biomart
 ```
 
 ### HGNC
@@ -35,7 +35,7 @@
 .. autosummary::
     :toctree: generated
 
-    hgnc.HGNC
+    hgnc
 ```
 
 ### UniProt
@@ -46,10 +46,9 @@
 
 .. autosummary::
     :toctree: generated
+    :recursive:
 
-    uniprot.UniProt
-    uniprot.UniProtGET
-    uniprot.UniProtPOST
+    uniprot
 ```
 
 ### Load
@@ -60,6 +59,7 @@
 
 .. autosummary::
     :toctree: generated
+    :recursive:
 
-    load.literal_eval_list
+    load
 ```
