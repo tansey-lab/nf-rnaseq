@@ -2,9 +2,19 @@
 
 ## API Clients
 
-### BioMart
+```{eval-rst}
+.. module:: nf_rnaseq.api_schema
+.. currentmodule:: nf_rnaseq
 
-Supports downloads of
+.. autosummary::
+    :toctree: generated
+
+    APIClient
+    APIClientGET
+    APIClientPOST
+```
+
+### BioMart
 
 ```{eval-rst}
 .. module:: nf_rnaseq.biomart
@@ -13,5 +23,43 @@ Supports downloads of
 .. autosummary::
     :toctree: generated
 
-    biomart.BioMart
+    BioMart
+```
+
+### HGNC
+
+```{eval-rst}
+.. module:: nf_rnaseq.hgnc
+.. currentmodule:: nf_rnaseq
+
+.. autosummary::
+    :toctree: generated
+
+    HGNC
+```
+
+### UniProt
+
+```{eval-rst}
+.. module:: nf_rnaseq.uniprot
+.. currentmodule:: nf_rnaseq
+
+.. autosummary::
+    :toctree: generated
+
+    UniProt
+    UniProtGET
+    UniProtPOST
+```
+
+### Load
+
+```{eval-rst}
+.. module:: nf_rnaseq.load
+.. currentmodule:: nf_rnaseq
+
+.. autosummary::
+    :toctree: generated
+
+    literal_eval_list
 ```
