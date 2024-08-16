@@ -44,6 +44,8 @@ doc = [
     # For notebooks
     "ipykernel",
     "ipython",
+    "jupyterlab",
+    "notebook",
     "sphinx-copybutton",
     "pandas",
 ]
