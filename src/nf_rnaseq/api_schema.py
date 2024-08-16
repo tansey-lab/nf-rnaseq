@@ -75,15 +75,15 @@ class APIClientGET(APIClient):
 
         self.check_response(response)
         if self.check_if_job_ready():
-            logger.info(f"\n{self.identifier}\n{self.json}")
+            logger.info(f"\n{self.identifier}\n{self.json}\n")
         else:
             try:
                 self.json = response.json()
-                logger.info(f"{self.identifier}\n{self.json}")
+                logger.info(f"\n{self.identifier}\n{self.json}\n")
             except requests.exceptions.JSONDecodeError as e:
                 logging.error("Error at %s", "division", exc_info=e)
                 self.text = response.text
-                logger.info(f"{self.identifier}\n{self.text}")
+                logger.info(f"\n{self.identifier}\n{self.text}\n")
 
     @abstractmethod
     def create_query_url(self):
