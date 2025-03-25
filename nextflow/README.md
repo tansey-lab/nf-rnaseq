@@ -4,7 +4,7 @@
 
 To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json -profile iris`
 
-It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
+It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks. 
 
 0. **Pre-analysis steps** *IN PROGRESS/TODO*
     + **(a) Download data**
@@ -228,6 +228,89 @@ flowchart TB
     v10 --> v11
     v11 --> v13
     v13 --> v14
+```
+
+## Running via a script
+
+To run the pipeline, I use the below `run_pipeline.sh` script on `iris`. Before running, I also run `mkdir <outDir>/stdout; <outDir>/stderr` and put this script in the `outDir` along with the `params.json` file described further below.
+
+Finally, I comment out all other `nextflow...` lines so that I can run each workflow separately and view the intermediate outputs.
+
+```
+#!/usr/bin/env bash
+#SBATCH --partition=componc_cpu
+#SBATCH --nodes=1
+#SBATCH --mem-per-cpu=8G
+#SBATCH --time=24:00:00
+#SBATCH --job-name=epithelioid
+#SBATCH --output=<outDir>/stdout/%x_%j.out
+#SBATCH --error=<outDir>/stderr/%x_%j.err
+
+module load java/20.0.1
+source ~/.bashrc
+
+PATH_NF="<DIR_TO_REPO>"
+PATH_RNA="<outDir>"
+
+nextflow \
+    -log ${PATH_RNA}/nextflow.log \
+    run \
+    ${PATH_NF} \
+    -params-file ${PATH_RNA}/params.json \
+    -profile iris \
+    -entry FASTQC_FASTQ \
+    -work-dir ${PATH_RNA}/work \
+    -resume
+
+nextflow \
+    -log ${PATH_RNA}/nextflow.log \
+    run \
+    ${PATH_NF} \
+    -params-file ${PATH_RNA}/params.json \
+    -profile iris \
+    -entry FASTP_FASTQ \
+    -work-dir ${PATH_RNA}/work \
+    -resume
+
+nextflow \
+    -log ${PATH_RNA}/nextflow.log \
+    run \
+    ${PATH_NF} \
+    -params-file ${PATH_RNA}/params.json \
+    -profile iris \
+    -entry STAR_FASTQ \
+    -work-dir ${PATH_RNA}/work \
+    -resume
+
+nextflow \
+    -log ${PATH_RNA}/nextflow.log \
+    run \
+    ${PATH_NF} \
+    -params-file ${PATH_RNA}/params.json \
+    -profile iris \
+    -entry QC_BAM \
+    -work-dir ${PATH_RNA}/work \
+    -resume
+
+nextflow \
+    -log ${PATH_RNA}/nextflow.log \
+    run \
+    ${PATH_NF} \
+    -params-file ${PATH_RNA}/params.json \
+    -profile iris \
+    -entry FEATURECOUNTS_BAM \
+    -work-dir ${PATH_RNA}/work \
+    -resume
+
+nextflow \
+    -log ${PATH_RNA}/nextflow.log \
+    run \
+    ${PATH_NF} \
+    -params-file ${PATH_RNA}/params.json \
+    -profile iris \
+    -entry ANNOTATE_CSV \
+    -work-dir ${PATH_RNA}/work \
+    -resume
 ```
 
 ## Environment
