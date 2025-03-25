@@ -204,7 +204,6 @@ flowchart TB
   
 ```mermaid
 flowchart TB
-    v1["fastq_ch"]
     v16[" "]
     end
     subgraph ANNOTATE_CSV
@@ -214,7 +213,6 @@ flowchart TB
     v3(( ))
     v13(( ))
     end
-    v0 --> v1
     v2 --> v3
     v9 --> v10
     v3 --> v10
@@ -224,6 +222,7 @@ flowchart TB
     v12 --> v13
     v13 --> v15
     v15 --> v16
+    end
 ```
 
 ## Environment
