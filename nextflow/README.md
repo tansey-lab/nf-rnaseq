@@ -6,7 +6,7 @@ To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json 
 
 It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
 
-0. **Pre-analysis steps**
+0. **Pre-analysis steps** *IN PROGRESS*
     + **(a) Download data**
     + **(b) Validate FASTQ files**
 
@@ -198,6 +198,33 @@ flowchart TB
     v5 --> v6
 ```
 
+6. **Annotate CSV**
+   + This workflow runs the `get_gene_name` CLI script from the `src/nf_rnaseq` package, which will provide a `gene_name_concat.tsv` file mapping the previous identifiers (Ensembl or UniProt ID if using `hg38.knownGene.gtf.gz`) to an HGNC gene name to be used in downstream tasks using `BioMart` or `UniProt` API clients
+   + To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry ANNOTATE_CSV`
+  
+```mermaid
+flowchart TB
+    v1["fastq_ch"]
+    v16[" "]
+    end
+    subgraph ANNOTATE_CSV
+    v10([QUERY_BIOMART])
+    v12([QUERY_UNIPROT])
+    v15([CONCAT_TSV])
+    v3(( ))
+    v13(( ))
+    end
+    v0 --> v1
+    v2 --> v3
+    v9 --> v10
+    v3 --> v10
+    v10 --> v13
+    v11 --> v12
+    v3 --> v12
+    v12 --> v13
+    v13 --> v15
+    v15 --> v16
+```
 
 ## Environment
 
@@ -208,15 +235,16 @@ Currently, this workflow assumes that a `conda` environment has been created wit
 Generate own `params.json` file using the following parameters:
 ```
 {
-    "inputDir"     : "TODO",
-    "fastqFile"    : "TODO",
+    "inputDir"     : "TODO", # directory or sub-directories where FASTQ files reside
+    "fastqFile"    : "TODO", # e.g., "*R{1,2}_001.fastq.gz"
     "outDir"       : "TODO",
-    "condaEnv"     : "TODO",
-    "genomeDir"    : "TODO",
-    "adapterFASTA" : "TODO",
-    "fileBED"      : "TODO",
-    "fileGTF"      : "TODO",
-    "strandedness" : "TODO"
+    "condaEnv"     : "TODO", # /home/whitej6/miniforge3/envs/rnaseq
+    "genomeDir"    : "TODO", # /data1/tanseyw/projects/genomes/hg38_knownGene_STARindex
+    "adapterFASTA" : "TODO", # /data1/tanseyw/projects/genomes/truseq_adapters.fasta
+    "fileBED"      : "TODO", # /data1/tanseyw/projects/genomes/hg38_RefSeq.bed
+    "fileGTF"      : "TODO", # /data1/tanseyw/projects/genomes/hg38.knownGene.gtf.gz
+    "strandedness" : "TODO", # either "forward," "reverse," or "" - see output from 4. Post-alignment QC
+    "cacheDir"     : "TODO"
 }
 ```
 
@@ -233,6 +261,7 @@ Below is a description of what each variable should contain. If variable is opti
 | fileBED      |    Yes   | Path to bed file to use; only necessary with some RSeqQC modules          |
 | fileGTF      |    No    | Path to gtf file to use to assemble count matrix with `featureCounts`     |
 | strandedness |    Yes   | Strandedness for `featureCounts`; if not provided defaults to unstranded  |
+| cacheDir     |    Yes   | Directory to store `requests_cache.sqlite` if using for `get_gene_name`   |
 
 ## Output directory/file structure
 
@@ -279,6 +308,8 @@ TODO: Add `bam_multiqc_report` and any quantification (`RSEM`/`featureCounts`) o
 ├── featurecounts
 │   ├── <sampleId>.featureCounts.txt
 │   ├── <sampleId>.featureCounts.txt.summary
+│   ├── <filePrefix>_featureCounts.csv
+│   ├── gene_name_concat.tsv
 ├── multiqc
 │   ├── bam_multiqc_report
 │   │   ├── multiqc_data
