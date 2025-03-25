@@ -6,7 +6,7 @@ To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json 
 
 It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
 
-0. **Pre-analysis steps** *IN PROGRESS*
+0. **Pre-analysis steps** *~IN PROGRESS/TODO~*
     + **(a) Download data**
     + **(b) Validate FASTQ files**
 
@@ -201,28 +201,34 @@ flowchart TB
 6. **Annotate CSV**
    + This workflow runs the `get_gene_name` CLI script from the `src/nf_rnaseq` package, which will provide a `gene_name_concat.tsv` file mapping the previous identifiers (Ensembl or UniProt ID if using `hg38.knownGene.gtf.gz`) to an HGNC gene name to be used in downstream tasks using `BioMart` or `UniProt` API clients
    + To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry ANNOTATE_CSV`
-  
+
+  # remove v0, 
 ```mermaid
 flowchart TB
-    v16[" "]
+    subgraph " "
+    v0["Channel.fromPath"]
+    v7["database"]
+    v9["database"]
+    end
+    subgraph " "
+    v14[" "]
     end
     subgraph ANNOTATE_CSV
-    v10([QUERY_BIOMART])
-    v12([QUERY_UNIPROT])
-    v15([CONCAT_TSV])
-    v3(( ))
-    v13(( ))
+    v8([QUERY_BIOMART])
+    v10([QUERY_UNIPROT])
+    v13([CONCAT_TSV])
+    v1(( ))
+    v11(( ))
     end
-    v2 --> v3
+    v0 --> v1
+    v7 --> v8
+    v1 --> v8
+    v8 --> v11
     v9 --> v10
-    v3 --> v10
-    v10 --> v13
-    v11 --> v12
-    v3 --> v12
-    v12 --> v13
-    v13 --> v15
-    v15 --> v16
-    end
+    v1 --> v10
+    v10 --> v11
+    v11 --> v13
+    v13 --> v14
 ```
 
 ## Environment
