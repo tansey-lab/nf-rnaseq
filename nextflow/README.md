@@ -6,7 +6,7 @@ To run the pipeline on Iris use: `nextflow run main.nf -params-file params.json 
 
 It is recommended that each workflow in `main.nf` is run sequentially to allow for users to inspect intermediate QC results and select optimal parameters for downstream tasks:
 
-0. **Pre-analysis steps** *~IN PROGRESS/TODO~*
+0. **Pre-analysis steps** *IN PROGRESS/TODO*
     + **(a) Download data**
     + **(b) Validate FASTQ files**
 
@@ -202,7 +202,6 @@ flowchart TB
    + This workflow runs the `get_gene_name` CLI script from the `src/nf_rnaseq` package, which will provide a `gene_name_concat.tsv` file mapping the previous identifiers (Ensembl or UniProt ID if using `hg38.knownGene.gtf.gz`) to an HGNC gene name to be used in downstream tasks using `BioMart` or `UniProt` API clients
    + To run this workflow alone use: `nextflow run main.nf -params-file params.json -profile iris -entry ANNOTATE_CSV`
 
-  # remove v0, 
 ```mermaid
 flowchart TB
     subgraph " "
