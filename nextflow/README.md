@@ -242,7 +242,7 @@ Finally, I comment out all other `nextflow...` lines so that I can run each work
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=8G
 #SBATCH --time=24:00:00
-#SBATCH --job-name=epithelioid
+#SBATCH --job-name=<jobName>
 #SBATCH --output=<outDir>/stdout/%x_%j.out
 #SBATCH --error=<outDir>/stderr/%x_%j.err
 
