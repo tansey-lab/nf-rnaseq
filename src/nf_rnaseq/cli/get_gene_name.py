@@ -51,15 +51,55 @@ def parsearg_utils():
         action="store_true",
     )
 
+    parser.add_argument(
+        "--termIn",
+        help="Input term in database (type: str, default: '' will use term_in from dictionary)",
+        type=str,
+        default="",
+    )
+
+    parser.add_argument(
+        "--termOut",
+        help="Output term in database (type: str, default: '' will use term_out from dictionary)",
+        type=str,
+        default="",
+    )
+
     parser = add_logging_flags(parser)
 
     return parser
+
+
+def get_term_in_out(str_arg, str_dict):
+    """
+    Get term in and out from string.
+
+    Parameters
+    ----------
+    str_arg: str
+        Term in/out from argparses
+    str_dict: str
+        Term in/out from
+
+    Returns
+    -------
+    str
+        Term in/out to use
+
+    """
+    if str_arg != "":
+        return str_arg
+    else:
+        return str_dict
 
 
 def main():
     """Get HGNC gene name from string input."""
     configure_logging()
     args = parsearg_utils().parse_args()
+
+    term_in = args.termIn
+    term_out = args.termOut
 
     inputs_ids = args.input.replace("[", "").replace("]", "")
 
@@ -74,15 +114,15 @@ def main():
             dict_post = DICT_DATABASES[args.database]["POST"]
             post_obj = dict_post["api_object"](
                 identifier=inputs_ids,
-                term_in=dict_post["term_in"],
-                term_out=dict_post["term_out"],
+                term_in=get_term_in_out(term_in, dict_post["term_in"]),
+                term_out=get_term_in_out(term_out, dict_post["term_out"]),
                 url_base=dict_post["url_base"],
             )
             dict_get = DICT_DATABASES[args.database]["GET"]
             api_obj = dict_get["api_object"](
                 identifier=inputs_ids,
-                term_in=dict_get["term_in"],
-                term_out=dict_get["term_out"],
+                term_in=get_term_in_out(term_in, dict_get["term_in"]),
+                term_out=get_term_in_out(term_out, dict_get["term_out"]),
                 url_base=dict_get["url_base"],
                 headers=dict_get["headers"],
                 jobId=post_obj.jobId,
@@ -91,8 +131,8 @@ def main():
             dict_get = DICT_DATABASES[args.database]["GET"]
             api_obj = dict_get["api_object"](
                 identifier=inputs_ids,
-                term_in=dict_get["term_in"],
-                term_out=dict_get["term_out"],
+                term_in=get_term_in_out(term_in, dict_get["term_in"]),
+                term_out=get_term_in_out(term_out, dict_get["term_out"]),
                 url_base=dict_get["url_base"],
                 headers=dict_get["headers"],
             )

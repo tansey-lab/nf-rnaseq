@@ -79,7 +79,10 @@ class APIClientGET(APIClient):
         else:
             try:
                 self.json = response.json()
-                logger.info(f"\n{self.identifier}\n{self.json}\n")
+                if len(str(self.json)) > 10**6:
+                    logger.info(f"\n{self.identifier}\n")
+                else:
+                    logger.info(f"\n{self.identifier}\n{self.json}\n")
             except requests.exceptions.JSONDecodeError as e:
                 logging.error("Error at %s", "division", exc_info=e)
                 self.text = response.text

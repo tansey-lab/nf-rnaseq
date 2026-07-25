@@ -35,8 +35,9 @@ class UniProt(APIClientGET):
         try:
             list_genes = [str(gene["geneName"]["value"]) for gene in self.json["genes"]]
             self.list_gene_names = list_genes
-        except (KeyError, AttributeError) as e:
+        except (KeyError, AttributeError, TypeError) as e:
             logging.error("Error at %s", "division", exc_info=e)
+            self.list_gene_names = None
 
 
 @dataclass
@@ -108,27 +109,32 @@ class UniProtGET(APIClientGET):
         list_identifier = []
         list_gene_names = []
 
-        str_results = "results"
-        if str_results in self.json:
-            list_results = self.json[str_results]
-            list_identifier.extend([i["from"] for i in list_results])
-            list_gene_names.extend([i["to"] for i in list_results])
+        try:
+            str_results = "results"
+            if str_results in self.json:
+                list_results = self.json[str_results]
+                list_identifier.extend([i["from"] for i in list_results])
+                list_gene_names.extend([i["to"] for i in list_results])
 
-        str_failedIds = "failedIds"
-        if str_failedIds in self.json:
-            list_failed = self.json[str_failedIds]
-            list_identifier.extend(list_failed)
-            list_gene_names.extend(list(np.repeat(np.nan, len(list_failed))))
+            str_failedIds = "failedIds"
+            if str_failedIds in self.json:
+                list_failed = self.json[str_failedIds]
+                list_identifier.extend(list_failed)
+                list_gene_names.extend(list(np.repeat(np.nan, len(list_failed))))
 
-        df = pd.DataFrame({"in": list_identifier, "out": list_gene_names})
-        df_agg = df.groupby("in", sort=False).agg(set).reset_index()
-        df_agg["out"] = df_agg["out"].apply(lambda x: list(x))
+            df = pd.DataFrame({"in": list_identifier, "out": list_gene_names})
+            df_agg = df.groupby("in", sort=False).agg(set).reset_index()
+            df_agg["out"] = df_agg["out"].apply(lambda x: list(x))
 
-        # list_check = [i for i in self.list_identifier if i in df_agg["in"].tolist()]
-        # assert len(list_check) == len(self.list_identifier)
+            # list_check = [i for i in self.list_identifier if i in df_agg["in"].tolist()]
+            # assert len(list_check) == len(self.list_identifier)
 
-        self.list_identifier = df_agg["in"].tolist()
-        self.list_gene_names = df_agg["out"].tolist()
+            self.list_identifier = df_agg["in"].tolist()
+            self.list_gene_names = df_agg["out"].tolist()
+        except (KeyError, AttributeError, TypeError) as e:
+            logging.error("Error at %s", "division", exc_info=e)
+            self.list_identifier = None
+            self.list_gene_names = None
 
 
 @dataclass
