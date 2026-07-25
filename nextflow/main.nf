@@ -18,6 +18,7 @@ params.dirFastQC = "fastqc"
 params.dirFastp = "fastqp"
 params.dirMultiQC = "multiqc"
 params.dirAlignment = "alignment"
+params.dirCRAM = "cram"
 
 // fastq
 params.fastq = "${params.inputDir}/${params.fastqFile}"
@@ -34,6 +35,11 @@ params.fastqc_fastp = "${params.outDir}/${params.dirFastQC}/fastp/*/*"
 params.bam = "${params.outDir}/${params.dirAlignment}/*.Aligned.sortedByCoord.out.bam"
 params.bam_log = "${params.outDir}/${params.dirAlignment}/*.Log.final.out"
 
+// cram - reference-based archival compression of the sorted BAMs
+params.cram = "${params.outDir}/${params.dirCRAM}/*.cram"
+params.cramVersion = "3.1"
+params.cramGenome = null
+
 log.info """\
         STAR RNA-Seq NextFlow Pipeline (Reference-Based)
         =================================================
@@ -44,6 +50,7 @@ log.info """\
         genomeDir    : ${params.genomeDir}
         adapterFASTA : ${params.adapterFASTA}
         fileBED      : ${params.fileBED}
+        cramGenome   : ${params.cramGenome}
         """
         .stripIndent()
 
@@ -65,6 +72,11 @@ include { RUN_MULTIQC as RUN_MULTIQC_FASTP } from './modules/multiqc/main.nf'   
 // align fastq files using STAR and index
 include { STAR_ALIGN                       } from './modules/star/main.nf'                  addParams(OUTPUT: "${params.outDir}/${params.dirAlignment}")
 include { SAMTOOLS_INDEX                   } from './modules/samtools/main.nf'              addParams(OUTPUT: "${params.outDir}/${params.dirAlignment}")
+
+// archival compression of sorted BAMs to reference-based CRAM
+include { SAMTOOLS_CRAM                    } from './modules/samtools/main.nf'              addParams(OUTPUT: "${params.outDir}/${params.dirCRAM}")
+include { SAMTOOLS_CRAM_INDEX              } from './modules/samtools/main.nf'              addParams(OUTPUT: "${params.outDir}/${params.dirCRAM}")
+include { CRAM_MANIFEST                    } from './modules/samtools/main.nf'              addParams(OUTPUT: "${params.outDir}/${params.dirCRAM}")
 
 // post-alignment multiqc
 include { RUN_MULTIQC as RUN_MULTIQC_STAR  } from './modules/multiqc/main.nf'               addParams(OUTPUT: "${params.outDir}/${params.dirMultiQC}")
@@ -110,6 +122,18 @@ if ( params.fileBED ){
 if ( params.fileGTF ){
     file_gtf = file(params.fileGTF)
     if( !file_gtf.exists() ) exit 1, "GTF file not found: ${params.fileGTF}"
+}
+
+// CRAM is not self-contained - it stores differences against the reference, so
+// the exact FASTA used here must remain available for the lifetime of the CRAMs.
+// A bgzip-compressed FASTA additionally needs a .gzi to be seekable.
+if ( params.cramGenome ){
+    file_fasta = file(params.cramGenome)
+    if( !file_fasta.exists() ) exit 1, "Reference FASTA not found: ${params.cramGenome}"
+    if( !file("${params.cramGenome}.fai").exists() )
+        exit 1, "FASTA index not found: ${params.cramGenome}.fai - run 'samtools faidx'"
+    if( params.cramGenome.toString().endsWith('.gz') && !file("${params.cramGenome}.gzi").exists() )
+        exit 1, "BGZF index not found: ${params.cramGenome}.gzi - the FASTA must be bgzip, not gzip"
 }
 
 /*
@@ -180,6 +204,25 @@ workflow QC_BAM {
         "bam",
         qc_ch.collect()
     )
+}
+
+workflow CRAM_BAM {
+    if ( !params.cramGenome )
+        exit 1, "CRAM_BAM requires --cramGenome (bgzip-compressed reference matching the BAM @SQ lines)"
+
+    Channel
+        .fromPath ( params.bam, checkIfExists: true )
+        .map { [it.simpleName, it ] }
+        .set { bam_ch }
+
+    // each BAM is converted and then verified lossless in the same task, so a
+    // failure leaves no published CRAM to be mistaken for a good one
+    SAMTOOLS_CRAM ( bam_ch )
+    SAMTOOLS_CRAM_INDEX ( SAMTOOLS_CRAM.out.cram )
+
+    // manifest records the resolved source BAM path for every verified CRAM;
+    // deletion of the originals is a deliberate separate step, not part of this run
+    CRAM_MANIFEST ( SAMTOOLS_CRAM.out.verify.collect() )
 }
 
 workflow FEATURECOUNTS_BAM {
